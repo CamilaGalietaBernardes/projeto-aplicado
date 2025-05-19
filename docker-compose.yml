@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+
+  app:
+    build: .
+    container_name: gestao_estoque_app
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=camila_pa
+      - DB_PASSWORD=projetoaplicado
+      - DB_NAME=gestao_estoque_manutencao
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    networks:
+      - gestao_estoque_network
+      
+  db:
+    image: postgres:latest
+    container_name: gestao_estoque_db
+    environment:
+      POSTGRES_USER: camila_pa
+      POSTGRES_PASSWORD: projetoaplicado
+      POSTGRES_DB: gestao_estoque_manutencao
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports: 
+      - "5432:5432"
+    networks:
+      - gestao_estoque_network
+   
+volumes:
+  pg_data:
+
+networks:
+  gestao_estoque_network:
+    driver: bridge
