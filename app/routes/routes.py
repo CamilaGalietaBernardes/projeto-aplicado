@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, request
+from flask import Flask, Blueprint, request, jsonify
 from app.utils.json_response import json_unicode
 from app.models.models import Estoque, Usuario, OrdemServico, db
 
@@ -7,6 +7,20 @@ bp = Blueprint("main", __name__)
 @bp.route("/")
 def home():
     return json_unicode({"message" : "Aplicação Flask com ProsgreSQL funcionando!"})
+
+@bp.route("/login", methods=["POST"])
+def login():
+    data = request.get_json()
+    usuario = Usuario.query.filter_by(email=data["usuario"]).first()
+    if usuario and usuario.verificar_senha(data["senha"]):
+        return jsonify({
+            "id": usuario.id,
+            "nome": usuario.nome,
+            "email": usuario.email,
+            "funcao": usuario.funcao,
+            "setor": usuario.setor
+        }), 200
+    return jsonify({"erro": "Usuário ou senha inválidos"}), 401
 
 @bp.route("/usuarios", methods=["GET"])
 def listar_usuarios():
