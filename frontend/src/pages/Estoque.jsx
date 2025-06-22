@@ -24,26 +24,32 @@ export default function Estoque() {
   }
 
   const handleSalvar = async (form) => {
-    if (!form.nome || !form.quantidade) {
+    if (!form.nome || !form.quantidade || !form.qtd_min) {
       toast.error("Preencha todos os campos!");
       return;
     }
+
+    console.log(form)
     try {
       if (itemEdicao) {
         await atualizarPeca(itemEdicao.id, {
-          peca: form.nome,
+          nome: form.nome,
           qtd: Number(form.quantidade),
-          categoria: form.tipo || "Outro"
+          categoria: form.tipo || "Outro", 
+          qtd_min: Number(form.qtd_min)
         });
         toast.success("Item atualizado!");
       } else {
-        await cadastrarPeca({
-          peca: form.nome,
+        const dados = {
+          nome: form.nome,
           qtd: Number(form.quantidade),
-          categoria: form.tipo || "Outro"
-        });
+          categoria: form.tipo || "Outro",
+          qtd_min: Number(form.qtd_min),
+        };
+        await cadastrarPeca(dados);
         toast.success("Item adicionado!");
       }
+
       setModalAberto(false);
       setItemEdicao(null);
       carregarEstoque();
@@ -57,7 +63,8 @@ export default function Estoque() {
       ...item,
       nome: item.peca,
       quantidade: item.qtd,
-      tipo: item.categoria
+      tipo: item.categoria,
+      qtd_min: item.qtd_min
     });
     setModalAberto(true);
   };
@@ -111,7 +118,7 @@ export default function Estoque() {
             <div className="flex justify-between items-center mb-2">
               <span className="font-bold text-lg text-emerald-700">{item.peca}</span>
               <span className={`px-3 py-1 rounded-full text-sm font-bold 
-                ${item.qtd <= 0 ? "bg-red-100 text-red-700" : "bg-emerald-100 text-emerald-800"}`}>
+                ${item.qtd <= item.qtd_min ? "bg-red-100 text-red-700" : "bg-emerald-100 text-emerald-800"}`}>
                 {item.qtd} un.
               </span>
             </div>

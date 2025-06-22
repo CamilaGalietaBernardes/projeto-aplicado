@@ -11,11 +11,12 @@ const EstoqueModal = React.memo(function EstoqueModal({
     nome: "",
     quantidade: "",
     tipo: "",
+    qtd_min: ""
   });
 
   useEffect(() => {
     if (open) {
-      setForm(itemEdicao || { nome: "", quantidade: "", tipo: "" });
+      setForm(itemEdicao || { nome: "", quantidade: "", tipo: "", qtd_min: "" });
     }
   }, [open, itemEdicao]);
 
@@ -45,6 +46,13 @@ const EstoqueModal = React.memo(function EstoqueModal({
           placeholder="Tipo (Ferramenta/Peça)"
           value={form.tipo}
           onChange={e => setForm(f => ({ ...f, tipo: e.target.value }))}
+          className="w-full mb-4 p-2 border rounded"
+        />
+        <input
+          type="number"
+          placeholder="Quantidade Mínima"
+          value={form.qtd_min}
+          onChange={e => setForm(f => ({ ...f, qtd_min: e.target.value }))}
           className="w-full mb-4 p-2 border rounded"
         />
         <div className="flex justify-end space-x-4">

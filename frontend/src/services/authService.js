@@ -6,25 +6,38 @@ export function salvarUsuarios(usuarios) {
   localStorage.setItem("usuarios", JSON.stringify(usuarios));
 }
 
+const API_URL = "http://localhost:5000";
+
 export async function autenticar(usuario, senha) {
-  const res = await fetch("http://localhost:5000/login", {
+  const response = await fetch(`${API_URL}/login`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({ usuario, senha })
   });
-  if (res.ok) {
-    return await res.json(); // Dados do usuário
-  } else {
-    throw new Error("Usuário ou senha inválidos");
+
+  if (!response.ok) {
+    const erro = await response.json();
+    throw new Error(erro.erro || "Erro ao autenticar");
   }
+
+  return await response.json();
 }
 
+
 export async function cadastrarUsuario(dados) {
-  const res = await fetch("http://localhost:5000/usuarios", {
+  const res = await fetch(`${API_URL}/usuarios`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dados)
   });
   if (!res.ok) throw new Error("Erro ao cadastrar usuário");
+  return res.json();
+}
+
+export async function listarUsuarios() {
+  const res = await fetch(`${API_URL}/usuarios`);
+  if (!res.ok) throw new Error("Erro ao buscar usuários");
   return res.json();
 }

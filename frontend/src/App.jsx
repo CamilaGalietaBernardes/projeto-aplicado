@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import Login from "./pages/Login";
 import Estoque from "./pages/Estoque";
 import Manutencao from "./pages/Manutencao";
@@ -9,6 +10,7 @@ import DashboardLayout from "./components/DashboardLayout";
 function App() {
   return (
     <BrowserRouter>
+      <Toaster position="top-right" reverseOrder={false} />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route
