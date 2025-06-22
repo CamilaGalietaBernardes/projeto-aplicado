@@ -1,20 +1,20 @@
 services:
 
-  app:
-    build: .
-    container_name: gestao_estoque_app
-    environment:
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_USER=camila_pa
-      - DB_PASSWORD=projetoaplicado
-      - DB_NAME=gestao_estoque_manutencao
-    ports:
-      - "5000:5000"
-    depends_on:
-      - db
-    networks:
-      - gestao_estoque_network
+  # app:
+  #   build: .
+  #   container_name: gestao_estoque_app
+  #   environment:
+  #     - DB_HOST=db
+  #     - DB_PORT=5432
+  #     - DB_USER=camila_pa
+  #     - DB_PASSWORD=projetoaplicado
+  #     - DB_NAME=gestao_estoque_manutencao
+  #   ports:
+  #     - "5000:5000"
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - gestao_estoque_network
       
   db:
     image: postgres:latest
@@ -27,12 +27,12 @@ services:
       - pg_data:/var/lib/postgresql/data
     ports: 
       - "5432:5432"
-    networks:
-      - gestao_estoque_network
+    # networks:
+    #   - gestao_estoque_network
    
 volumes:
   pg_data:
 
-networks:
-  gestao_estoque_network:
-    driver: bridge
+# networks:
+#   gestao_estoque_network:
+#     driver: bridge
