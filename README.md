@@ -64,19 +64,6 @@ O banco de dados PostgreSQL é iniciado automaticamente pelo Docker e usa as var
 
 ---
 
-## 📂 Organização
-  projeto-aplicado/
-  ├── backend/  
-  │   ├── app.py                     # Inicialização do app Flask
-  │   ├── requirements.txt           # Dependências do backend
-  │   └── app/
-  │       ├── __init__.py            # Criação da aplicação e configuração do banco
-  │       ├── models/                # Definições das tabelas e modelos SQLAlchemy
-  │       ├── routes/                # Rotas da API
-  │       ├── services/              # Lógica de negócio (ordem de serviço, usuário, etc.)
-  │       └── utils/                 # Utilitários auxiliares
----
-
 📂 **Pasta services/**
   A lógica principal está dividida em arquivos:
 
