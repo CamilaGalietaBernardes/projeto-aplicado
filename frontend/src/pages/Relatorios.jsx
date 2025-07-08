@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { ler } from "../utils/storage";
+import { ler, salvar } from "../utils/storage";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { saveAs } from "file-saver";
 import {
   PieChart, Pie, Cell, Tooltip as RechartsTooltip, Legend,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer
 } from "recharts";
+import * as XLSX from "xlsx";
+
 
 export default function Relatorios() {
   const [manutencoes, setManutencoes] = useState([]);
@@ -13,6 +15,41 @@ export default function Relatorios() {
   const [busca, setBusca] = useState("");
   const [filtroStatus, setFiltroStatus] = useState("");
   const [filtroTipo, setFiltroTipo] = useState("");
+
+const carregarEstoque = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/peca");
+      const dados = await response.json();
+      const dadosFormatados = dados.map((e) => ({
+        nome: e.peca,
+        categoria: e.categoria,
+        quantidade: e.qtd,
+        qtd_min: e.qtd_min,
+      }));
+      salvar("estoque", dadosFormatados);
+    } catch (error) {
+      console.error("Erro ao carregar estoque:", error);
+    }
+  };
+
+  const carregarManutencoes = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/ordemservico");
+      const dados = await response.json();
+      const manutencoesFormatadas = dados.map((o) => ({
+        id: o.id,
+        equipamento: o.equipamento?.peca || "Sem Nome",
+        responsavel: o.solicitante?.nome || "Sem Nome",
+        tipo: o.tipo,
+        status: o.status,
+        dataAbertura: new Date(o.data).toLocaleDateString("pt-BR"),
+        descricao: o.detalhes,
+      }));
+      salvar("manutencao", manutencoesFormatadas);
+    } catch (error) {
+      console.error("Erro ao carregar manutenções:", error);
+    }
+  };
 
   // Função utilitária para exportar CSV
   function exportarCSV(ordens) {
@@ -33,9 +70,37 @@ export default function Relatorios() {
     saveAs(blob, "relatorio-manutencao.csv");
   }
 
+  function exportarExcel(manutencoes, estoque) {
+  const worksheet1 = XLSX.utils.json_to_sheet(manutencoes.map((m) => ({
+    Equipamento: m.equipamento,
+    Responsável: m.responsavel,
+    Tipo: m.tipo,
+    Status: m.status,
+    "Data de Abertura": m.dataAbertura,
+    Descrição: m.descricao,
+  })));
+
+  const worksheet2 = XLSX.utils.json_to_sheet(estoque.map((e) => ({
+    Nome: e.nome,
+    Quantidade: e.quantidade,
+    "Quantidade Mínima": e.qtd_min,
+    Alerta: e.quantidade <= (e.qtd_min || 0) ? "⚠️ Baixo Estoque" : "OK"
+  })));
+
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet1, "Ordens de Manutenção");
+  XLSX.utils.book_append_sheet(workbook, worksheet2, "Estoque");
+
+  const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+  const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+  saveAs(blob, "relatorio_manutencao.xlsx");
+} 
+
   useEffect(() => {
-    setManutencoes(ler("manutencao", []));
-    setEstoque(ler("estoque", []));
+    Promise.all([carregarEstoque(), carregarManutencoes()]).then(() => {
+      setEstoque(ler("estoque", []));
+      setManutencoes(ler("manutencao", []));
+    });
   }, []);
 
   // KPIs
@@ -43,7 +108,8 @@ export default function Relatorios() {
   const concluidas = manutencoes.filter(m => m.status === "Concluída").length;
   const pendentes = manutencoes.filter(m => m.status === "Pendente").length;
   const atrasadas = manutencoes.filter(m => m.status === "Atrasada").length;
-  const baixoEstoque = estoque.filter(e => e.quantidade <= (e.quantidadeMinima || 0)).length;
+  const baixoEstoque = estoque.filter(e => 
+    typeof e.quantidade === "number" && e.quantidade <= e.qtd_min).length;
 
   // Dados para gráficos
   const dataStatus = [
@@ -61,7 +127,7 @@ export default function Relatorios() {
   const dataEstoque = estoque.map(e => ({
     nome: e.nome,
     quantidade: e.quantidade,
-    minima: e.quantidadeMinima || 0,
+    minima: e.qtd_min || 0,
   }));
 
   // Filtros
@@ -197,6 +263,12 @@ export default function Relatorios() {
           className="bg-emerald-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-emerald-700 shadow"
         >
           Exportar CSV
+        </button>
+        <button
+          onClick={() => exportarExcel(manutencoesFiltradas, estoque)}
+          className="bg-emerald-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-emerald-700 shadow"
+        >
+          Exportar Excel
         </button>
       </div>
 

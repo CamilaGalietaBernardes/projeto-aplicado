@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { adicionarNotificacao, listarNotificacoes } from "../services/notificacoesService";
 import { Menu, Package, Wrench, LogOut, Bell } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { buscarNotificacoesEstoque } from "../services/EstoqueNotificacoesApi";
@@ -9,7 +8,7 @@ import { buscarNotificacoesEstoque } from "../services/EstoqueNotificacoesApi";
 const DashboardLayout = ({ children }) => {
   const navigate = useNavigate();
   const [menuAberto, setMenuAberto] = useState(false);
-  const [notificacoes, setNotificacoes] = useState(listarNotificacoes());
+  const [notificacoes, setNotificacoes] = useState([]);
   const [mostrarAlertas, setMostrarAlertas] = useState(false);
   const { logout } = useAuth();
   const { usuario } = useAuth();
@@ -22,18 +21,24 @@ const DashboardLayout = ({ children }) => {
     setMostrarAlertas(!mostrarAlertas);
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setNotificacoes(listarNotificacoes());
-    }, 2000);
+ useEffect(() => {
+  const atualizarNotificacoes = async () => {
+    try {
+      const alertas = await buscarNotificacoesEstoque();
+      setNotificacoes(alertas);
+    } catch (error) {
+      console.error("Erro ao buscar notificações do estoque:", error);
+      setNotificacoes([]);
+    }
+  };
 
-    buscarNotificacoesEstoque().then((alertas) => {
-      alertas.forEach((n) => {
-        adicionarNotificacao(n.mensagem);
-      });
-    });
-    return () => clearInterval(interval);
-  }, []);
+  atualizarNotificacoes();
+
+  const interval = setInterval(atualizarNotificacoes, 5000);
+
+  return () => clearInterval(interval);
+}, []);
+
 
   return (
     <div>
