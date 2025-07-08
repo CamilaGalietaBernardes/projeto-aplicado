@@ -13,7 +13,8 @@ export default function ManutencaoModal({ open, onSalvar, onClose, ordemEdicao }
     status: "",
     data: new Date().toISOString().split("T")[0],
     equipamento_id: "",
-    solicitante_id: ""
+    solicitante_id: "",
+    quantidade: ""
   });
 
   const [equipamentos, setEquipamentos] = useState([]);
@@ -29,7 +30,8 @@ export default function ManutencaoModal({ open, onSalvar, onClose, ordemEdicao }
         status: ordemEdicao.status || "",
         data: ordemEdicao.data?.split("T")[0] || new Date().toISOString().split("T")[0],
         equipamento_id: ordemEdicao.equipamento?.id || "",
-        solicitante_id: ordemEdicao.solicitante?.id || ""
+        solicitante_id: ordemEdicao.solicitante?.id || "",
+        quantidade: ordemEdicao.quantidade || "",
       });
     }
   }, [ordemEdicao]);
@@ -60,13 +62,24 @@ export default function ManutencaoModal({ open, onSalvar, onClose, ordemEdicao }
       alert("Preencha todos os campos obrigatórios.");
       return;
     }
+    const quantidadeInt = parseInt(form.quantidade);
+    if (isNaN(quantidadeInt) || quantidadeInt <= 0){
+      alert("É necessário adicionar uma quantidade maior que zero!")
+      return;
+    }
 
     const dados = {
       ...form,
       equipamento_id: parseInt(form.equipamento_id),
-      solicitante_id: parseInt(form.solicitante_id)
+      solicitante_id: parseInt(form.solicitante_id),
+      pecas_utilizadas: [
+        {
+          peca_id: parseInt(form.equipamento_id),
+          quantidade: quantidadeInt
+          }
+      ]
     };
-
+    console.log("Dados enviados para o backend: ", dados);
     onSalvar(dados);
   };
 
@@ -92,12 +105,19 @@ export default function ManutencaoModal({ open, onSalvar, onClose, ordemEdicao }
               <option value="Atrasada">Atrasada</option>
             </select>
             <input type="date" name="data" value={form.data} onChange={handleChange} className="w-full p-2 border rounded" />
-            <select name="equipamento_id" value={form.equipamento_id} onChange={handleChange} className="w-full p-2 border rounded">
-              <option value="">Selecione o Equipamento</option>
-              {equipamentos.map((e) => (
-                <option key={e.id} value={e.id}>{e.peca}</option>
-              ))}
-            </select>
+            <div className="flex dap-2">
+                <select 
+                  name="equipamento_id" 
+                  value={form.equipamento_id} 
+                  onChange={handleChange} 
+                  className="w-full p-2 border rounded">
+                  <option value="">Selecione o Equipamento e Quantidade</option>
+                  {equipamentos.map((e) => (
+                    <option key={e.id} value={e.id}>{e.peca}</option>
+                  ))}
+                </select>
+                <input type="number" name = "quantidade" value = {form.quantidade} onChange={handleChange} min="1" className="w-24 p-2 border rounded" placeholder="Qtd"></input>
+            </div>
             <select name="solicitante_id" value={form.solicitante_id} onChange={handleChange} className="w-full p-2 border rounded">
               <option value="">Selecione o Solicitante</option>
               {usuarios.map((u) => (

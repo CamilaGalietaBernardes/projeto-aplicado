@@ -4,6 +4,8 @@ from app.services.peca import listar_pecas, nova_peca, atualizar_peca, excluir_p
 from app.services.ordem_servico import listar_ordens, nova_ordem, atualizar_ordem, excluir_ordem
 from app.services.usuario import atualiza_usuario, deleta_usuario, cria_usuario, listar_usuarios
 from app.services.login import autenticar_usuario
+from app.services.alertas import listar_alertas_reposicao
+from app.services.notificacoes_estoque import listar_notificacoes
 
 bp = Blueprint("main", __name__)
 
@@ -153,3 +155,18 @@ def excluir_ordem_route(id):
         status = 404 if erro == "Ordem não encontrada" else 500
         return json_unicode({"erro": erro}, status)
     return json_unicode({"mensagem": "Ordem excluída com sucesso"}, 200)
+
+# =================== ALERTAS ====================
+
+@bp.route("/estoque/alertas", methods = ["GET"])
+def alertas_estoque():
+    erro, dados = listar_alertas_reposicao()
+    if erro:
+        return jsonify({"erro": erro}), 500
+    return jsonify([e.to_dict() for e in dados]), 200
+
+@bp.route("/notificacoes-estoque", methods = ["GET"])
+def get_notificacoes():
+    return listar_notificacoes()
+
+

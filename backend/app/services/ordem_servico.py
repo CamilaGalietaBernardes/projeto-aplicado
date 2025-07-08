@@ -1,5 +1,5 @@
 from app import db
-from app.models.models import OrdemServico
+from app.models.models import OrdemServico, Pecas_Ordem_Servico, Estoque
 from sqlalchemy.orm import joinedload
 
 
@@ -33,10 +33,43 @@ def nova_ordem(data):
             status=data["status"]
         )
         db.session.add(ordem)
+        db.session.flush()
+
+        pecas = data.get("pecas_utilizadas", [])
+        for p in pecas:
+            peca_id = p.get("peca_id")
+            try:
+                quantidade = int(p.get("quantidade"))
+            except (TypeError, ValueError):
+                raise Exception(f"Quantidade inválida para a peça {peca_id}")
+            
+            if peca_id is None or quantidade is None:
+                raise Exception("Dados de peças incompletos")
+            if not isinstance(quantidade, int) or quantidade <= 0:
+                raise Exception("Quantidade invalida para a peça selecionada!")
+
+            estoque = Estoque.query.filter_by(peca_id=peca_id).first()
+            if not estoque:
+                raise Exception(f"Estoque da peça {peca_id} não encontrado!")
+            if estoque.qtd < quantidade:
+                raise Exception(f"Estoque insuficiente para a peça {peca_id}!")
+            
+            estoque.qtd -= quantidade
+
+            uso_os = Pecas_Ordem_Servico(
+                os_id = ordem.id,
+                peca_id = peca_id,
+                quantidade = quantidade
+            )
+            db.session.add(uso_os)
+        
         db.session.commit()
+        print(f"****************Peça debitada: {peca_id} e {quantidade}***************")
         return None, ordem
+    
     except Exception as e:
         db.session.rollback()
+        print("*********erro ao criar ordem:*********** ", e)
         return str(e), None
 
 
@@ -70,9 +103,22 @@ def excluir_ordem(id):
         return "Ordem não encontrada", None
 
     try:
+        pecas_usadas = Pecas_Ordem_Servico.query.filter_by(os_id=id).all()
+        for pu in pecas_usadas:
+            estoque = Estoque.query.filter_by(peca_id = pu.peca_id).first()
+            if estoque:
+                estoque.qtd += pu.quantidade
+                print(f"*********Peça devolvida ao estoque!**********")
+
+        for pu in pecas_usadas:
+            db.session.delete(pu)
+            
         db.session.delete(ordem)
         db.session.commit()
+
         return None, ordem
+    
     except Exception as e:
         db.session.rollback()
+        print("**********Erro ao excluir ordem!***********")
         return str(e), None

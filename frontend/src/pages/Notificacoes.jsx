@@ -1,13 +1,18 @@
 import { listarNotificacoes, limparNotificacoes } from "../services/notificacoesService";
 import toast from "react-hot-toast";
+import { useState, useEffect } from "react";
 
 const Notificacoes = () => {
-  const notificacoes = listarNotificacoes();
+  const [notificacoes, setNotificacoes] = useState([]);
+
+  useEffect(() => {
+    setNotificacoes(listarNotificacoes());
+  }, []);
 
   const handleLimpar = () => {
     limparNotificacoes();
     toast.success("Notificações limpas!");
-    window.location.reload();
+    setNotificacoes([]);
   };
 
   return (

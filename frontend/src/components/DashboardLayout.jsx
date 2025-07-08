@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { listarNotificacoes } from "../services/notificacoesService";
+import { adicionarNotificacao, listarNotificacoes } from "../services/notificacoesService";
 import { Menu, Package, Wrench, LogOut, Bell } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
+import { buscarNotificacoesEstoque } from "../services/EstoqueNotificacoesApi";
 
 
 const DashboardLayout = ({ children }) => {
@@ -25,6 +26,12 @@ const DashboardLayout = ({ children }) => {
     const interval = setInterval(() => {
       setNotificacoes(listarNotificacoes());
     }, 2000);
+
+    buscarNotificacoesEstoque().then((alertas) => {
+      alertas.forEach((n) => {
+        adicionarNotificacao(n.mensagem);
+      });
+    });
     return () => clearInterval(interval);
   }, []);
 
@@ -82,7 +89,9 @@ const DashboardLayout = ({ children }) => {
               >
                 <Bell size={24} />
                 {notificacoes.length > 0 && (
-                  <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500"></span>
+                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {notificacoes.length}
+                  </span>
                 )}
               </button>
 
