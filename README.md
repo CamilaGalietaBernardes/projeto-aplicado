@@ -1,117 +1,52 @@
 # Projeto Aplicado – Gestão de Peças e Manutenção
 
-Este é o backend da aplicação desenvolvida para o Projeto Aplicado III do curso de Análise e Desenvolvimento de Sistemas do SENAI.
-
-A solução busca automatizar e centralizar o controle de estoque de peças e ordens de serviço de manutenção.
-
----
-
-## ✅ Funcionalidades já implementadas
-
-* Cadastro e listagem de usuários
-* Cadastro, listagem, atualização e exclusão de peças do estoque
-* Registro de entrada e saída de peças
+  Este é o backend da aplicação desenvolvida para o Projeto Aplicado III do curso de Análise e Desenvolvimento de Sistemas do SENAI.
+  A solução busca automatizar e centralizar o controle de estoque de peças e ordens de serviço de manutenção.
 
 ---
 
-## 🔌 Endpoints da API
+🚀 Tecnologias Utilizadas
+  -  Python 3.x
 
-### 🧑‍💼 Usuários
+  -  Flask 3.1.0
 
-#### `GET /usuarios`
+  -  Flask SQLAlchemy
 
-Lista todos os usuários.
+  -  PostgreSQL
 
-#### `POST /usuarios`
+  -  Flask-CORS
 
-Cria um novo usuário.
-
-**JSON de entrada:**
-
-```json
-{
-  "nome": "Maria Souza",
-  "email": "maria@example.com",
-  "funcao": "Analista",
-  "setor": "RH",
-  "senha": "123456"
-}
-```
+  -  python-dotenv
 
 ---
 
-### 🔩 Estoque de Peças
+🔧 **Como Executar**
+  **1. Clone o Repositório**
+    git clone https://github.com/camilagalieta/projeto-aplicado.git
+    cd projeto-aplicado/backend
 
-#### `GET /estoque`
+  **2. Crie um ambiente virtual e ative**
+    python -m venv venv
+    source venv/bin/activate  # ou venv\Scripts\activate no Windows
 
-Lista todas as peças do estoque. Pode usar query params como:
+  **3. Instale as dependências**
+    pip install -r requirements.txt
 
-```
-/estoque?peca=parafuso&categoria=fixação
-```
+  **4. Configure o arquivo .env:**
+    DATABASE_URL=postgresql://camila_pa:projetoaplicado@db:5432/gestao_estoque_manutencao
+  
+  **5. Execute o servidor:**
+    python3 app.py
+  
+  O servidor estará disponível em http://localhost:5000.
 
-#### `POST /estoque`
+**📌 Funcionalidades**
+  Cadastro e autenticação de usuários
 
-Cadastra uma nova peça.
+  Cadastro de peças
 
-**JSON de entrada:**
-
-```json
-{
-  "peca": "Parafuso M8",
-  "qtd": 100,
-  "categoria": "fixação"
-}
-```
-
-#### `PUT /estoque/<id>`
-
-Atualiza os dados de uma peça.
-
-**JSON opcional (parcial ou total):**
-
-```json
-{
-  "peca": "Parafuso M8",
-  "qtd": 200,
-  "categoria": "fixação pesada"
-}
-```
-
-#### `DELETE /estoque/<id>`
-
-Remove uma peça do estoque.
-
----
-
-### 📦 Entrada/Saída de Peças
-
-#### `POST /estoque/entrada`
-
-Registra entrada de uma peça no estoque.
-
-**JSON:**
-
-```json
-{
-  "peca_id": 1,
-  "quantidade": 50
-}
-```
-
-#### `POST /estoque/saida`
-
-Registra saída de uma peça no estoque.
-
-**JSON:**
-
-```json
-{
-  "peca_id": 1,
-  "quantidade": 20
-}
-```
-
+  Criação, listagem e gerenciamento de ordens de serviço
+  
 ---
 
 ## 💾 Requisitos
@@ -120,17 +55,7 @@ Registra saída de uma peça no estoque.
 * Flask 3.1.0
 * PostgreSQL
 * Docker + Docker Compose
-
----
-
-## 🚀 Como subir a aplicação com Docker
-
-```bash
-docker compose up --build
-```
-
-A API estará disponível em: [http://localhost:5000](http://localhost:5000)
-
+  
 ---
 
 ## 🗃️ Banco de Dados
@@ -139,12 +64,16 @@ O banco de dados PostgreSQL é iniciado automaticamente pelo Docker e usa as var
 
 ---
 
-## 📂 Organização
+📂 **Pasta services/**
+  A lógica principal está dividida em arquivos:
 
-* `app/models/models.py` – modelos do SQLAlchemy
-* `app/routes/routes.py` – rotas da API
-* `app/utils/json_response.py` – utilitário para retorno com UTF-8
-* `app.py` – inicializador da aplicação
-* `docker-compose.yml` – configuração dos containers
+    login.py: autenticação de usuários
 
----
+    usuario.py: operações com usuários
+
+    ordem_servico.py: regras para ordens de serviço
+
+    peca.py: controle de peças
+
+📫** Contribuições**
+  Pull requests são bem-vindas! Para mudanças maiores, abra uma issue para discutir o que deseja modificar.
