@@ -1,11 +1,13 @@
-version: "3.9"
-
 services:
-
   app:
-    build: .
+    build: ./backend
     container_name: gestao_estoque_app
+    volumes:
+      - ./backend:/app
     environment:
+      - PYTHONUNBUFFERED=1 # força os prints aparecerem na hora
+      - FLASK_APP=app.py
+      - FLASK_ENV=development
       - DB_HOST=db
       - DB_PORT=5432
       - DB_USER=camila_pa
@@ -17,7 +19,21 @@ services:
       - db
     networks:
       - gestao_estoque_network
-      
+  
+  frontend:
+    build:
+      context: ./frontend
+    container_name: gestao_estoque_fronten
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - app
+    networks:
+      - gestao_estoque_network
+
   db:
     image: postgres:latest
     container_name: gestao_estoque_db
@@ -27,11 +43,11 @@ services:
       POSTGRES_DB: gestao_estoque_manutencao
     volumes:
       - pg_data:/var/lib/postgresql/data
-    ports: 
+    ports:
       - "5432:5432"
     networks:
       - gestao_estoque_network
-   
+
 volumes:
   pg_data:
 
