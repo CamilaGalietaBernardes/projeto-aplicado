@@ -47,6 +47,7 @@ class Usuario(db.Model):
     setor = db.Column(db.String(100), nullable = False)
     senha_hash = db.Column(db.String(512), nullable = False)
 
+
     def set_senha(self, senha):
         self.senha_hash = generate_password_hash(senha)
 
