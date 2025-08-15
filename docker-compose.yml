@@ -1,41 +1,6 @@
 services:
-  app:
-    build: ./backend
-    container_name: gestao_estoque_app
-    volumes:
-      - ./backend:/app
-    environment:
-      - PYTHONUNBUFFERED=1 # força os prints aparecerem na hora
-      - FLASK_APP=app.py
-      - FLASK_ENV=development
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_USER=camila_pa
-      - DB_PASSWORD=projetoaplicado
-      - DB_NAME=gestao_estoque_manutencao
-    ports:
-      - "5000:5000"
-    depends_on:
-      - db
-    networks:
-      - gestao_estoque_network
-  
-  frontend:
-    build:
-      context: ./frontend
-    container_name: gestao_estoque_fronten
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    depends_on:
-      - app
-    networks:
-      - gestao_estoque_network
-
   db:
-    image: postgres:latest
+    image: postgres:15
     container_name: gestao_estoque_db
     environment:
       POSTGRES_USER: camila_pa
@@ -45,6 +10,48 @@ services:
       - pg_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U camila_pa -d gestao_estoque_manutencao"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - gestao_estoque_network
+    
+  app:
+    build: ./backend
+    container_name: gestao_estoque_app
+    volumes:
+      - ./backend:/app
+    environment:
+      - PYTHONUNBUFFERED=1 
+      - FLASK_APP=app.py
+      - FLASK_ENV=development
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=camila_pa
+      - DB_PASSWORD=projetoaplicado
+      - DB_NAME=gestao_estoque_manutencao
+    depends_on:
+      db: 
+        condition: service_healthy
+    command: ["/bin/sh", "-c", "./wait-for-db.sh && flask run --host=0.0.0.0 --reload"]
+    ports:
+      - "5000:5000"
+    networks:
+      - gestao_estoque_network
+  
+  frontend:
+    build:
+      context: ./frontend
+    container_name: gestao_estoque_frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - app
     networks:
       - gestao_estoque_network
 
