@@ -1,0 +1,1 @@
+ /Users/cristianbrunone/Documents/projeto-aplicado/mobile/.dart_tool/flutter_build/3ab83d33dd71adae6b3813068c4e3df6/native_assets.json: 
