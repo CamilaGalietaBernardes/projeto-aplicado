@@ -3,7 +3,7 @@ services:
     name: gestao-estoque-api
     env: python
     buildCommand: "pip install -r backend/requirements.txt"
-    startCommand: "cd backend && gunicorn --bind 0.0.0.0:$PORT 'app:app'"
+    startCommand: "gunicorn --chdir /app/app --bind 0.0.0.0:$PORT 'app:app'"
     autoDeploy: true
     envVars:
       - key: DATABASE_URL
