@@ -3,12 +3,12 @@ FROM python:3.9
 # Define o diretório de trabalho
 WORKDIR /app
 
-# Copia e instala o requirements.txt primeiro para cache
-COPY backend/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copia o restante do código
+# Copia todo o conteúdo da pasta backend para o contêiner
+# Isso inclui requirements.txt, que será usado logo em seguida.
 COPY backend/ .
+
+# Instala as dependências a partir do arquivo no diretório atual.
+RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 5000
 
