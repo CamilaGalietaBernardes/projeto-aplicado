@@ -6,7 +6,7 @@ export function salvarUsuarios(usuarios) {
   localStorage.setItem("usuarios", JSON.stringify(usuarios));
 }
 
-const API_URL = "http://localhost:5000";
+const API_URL = "https://projeto-aplicado.onrender.com";
 
 export async function autenticar(usuario, senha) {
   const response = await fetch(`${API_URL}/login`, {
