@@ -2,44 +2,36 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-
 from dotenv import load_dotenv
+
+# Carrega as variáveis de ambiente do .env
 load_dotenv(override=False)
 
+# Instancia o aplicativo Flask e o SQLAlchemy
+app = Flask(__name__)
 db = SQLAlchemy()
 
+# Configurações do aplicativo
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+app.config["SQLALCHEMY_ECHO"] = bool(int(os.getenv("SQLALCHEMY_ECHO", "0")))
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-def create_app() -> Flask:
+# Configura o CORS
+CORS(
+    app,
+    resources={r"/*": {"origins": ["http://localhost:5173"]}},
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
+)
 
-    app = Flask(__name__)
+# Inicializa o db e registra as rotas
+db.init_app(app)
+from .routes import routes
+app.register_blueprint(routes.bp)
 
+# Cria as tabelas do banco de dados ao iniciar
+with app.app_context():
+    db.create_all()
+    print("Tabelas criadas com sucesso!")
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = (
-    os.getenv("DATABASE_URL") or os.getenv("SQLALCHEMY_DATABASE_URI")
-    )
-
-
-    # ------------------ FIM DA SEÇÃO ALTERADA ------------------
-
-    app.config["SQLALCHEMY_ECHO"] = bool(int(os.getenv("SQLALCHEMY_ECHO", "0")))
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-    CORS(
-        app,
-        resources={r"/*": {"origins": ["http://localhost:5173"]}},
-        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allow_headers=["Content-Type", "Authorization"],
-    )
-
-    db.init_app(app)
-
-    from .routes import routes
-    app.register_blueprint(routes.bp)
-
-    from .models import models as _models
-
-    with app.app_context():
-        db.create_all() 
-        print("Tabelas criadas com sucesso!")
-
-    return app
+# O Gunicorn agora pode encontrar a variável 'app' no módulo backend.app
