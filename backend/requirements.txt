@@ -4,3 +4,4 @@ Flask-SQLAlchemy==3.1.1
 Flask-Cors==6.0.0
 python-dotenv==1.0.1
 psycopg2-binary
+gunicorn
