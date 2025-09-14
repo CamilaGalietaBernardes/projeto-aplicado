@@ -7,6 +7,6 @@ services:
     autoDeploy: true
     envVars:
       - key: DATABASE_URL
-        value: "postgresql://postgres:senaiads@gldaaxfglefflnmhkrk.supabase.co:5432/postgres"
+        value: "postgresql://postgres:senaiads@db.gldaarxfglefflnmhkrk.supabase.co:5432/postgres"
       - key: FLASK_ENV
         value: production
