@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: gestao-estoque-api
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn --bind 0.0.0.0:5000 app:app"
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        value: "postgresql://postgres:senaiads@gldaaxfglefflnmhkrk.supabase.co:5432/postgres"
+      - key: FLASK_ENV
+        value: production

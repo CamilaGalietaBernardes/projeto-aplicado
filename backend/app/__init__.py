@@ -13,15 +13,12 @@ def create_app() -> Flask:
 
     app = Flask(__name__)
 
-    DB_USER = os.getenv('DB_USER', 'camila_pa')
-    DB_PASSWORD = os.getenv('DB_PASSWORD', 'projeto_aplicado')
-    DB_HOST = os.getenv('DB_HOST', 'db')
-    DB_PORT = os.getenv('DB_PORT', '5432')
-    DB_NAME = os.getenv('DB_NAME', 'gestao_estoque_manutencao')
 
     app.config["SQLALCHEMY_DATABASE_URI"] = (
-        f"postgresql+psycopg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    os.getenv("DATABASE_URL") or os.getenv("SQLALCHEMY_DATABASE_URI")
     )
+
+    # ------------------ FIM DA SEÇÃO ALTERADA ------------------
 
     app.config["SQLALCHEMY_ECHO"] = bool(int(os.getenv("SQLALCHEMY_ECHO", "0")))
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
