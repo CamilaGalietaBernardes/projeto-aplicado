@@ -3,10 +3,4 @@ services:
     name: gestao-estoque-api
     env: python
     buildCommand: "pip install -r backend/requirements.txt"
-    # Remova a linha 'startCommand'
     autoDeploy: true
-    envVars:
-      - key: DATABASE_URL
-        value: "postgresql://postgres.gldaarxfglefflnmhkrk:Senaiads2025@aws-1-sa-east-1.pooler.supabase.com:5432/postgres"
-      - key: FLASK_ENV
-        value: production
