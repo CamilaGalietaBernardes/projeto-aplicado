@@ -25,10 +25,10 @@ def create_app() -> Flask:
     # Note: você pode precisar ajustar essas importações
     # de `from .routes import routes` para algo como `from routes import routes`
     # dependendo da sua estrutura de pastas.
-    from .routes import routes
+    from routes import routes
     app.register_blueprint(routes.bp)
 
-    from .models import models as _models
+    from models import models as _models
 
     with app.app_context():
         db.create_all()
