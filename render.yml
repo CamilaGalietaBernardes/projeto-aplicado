@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: gestao-estoque-api
+    env: python
+    buildCommand: "pip install -r backend/requirements.txt"
+    autoDeploy: true
