@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000";
+const API_URL = "https://projeto-aplicado.onrender.com";
 
 export async function listarOS() {
   const res = await fetch(`${API_URL}/ordemservico`);
