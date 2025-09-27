@@ -1,11 +1,11 @@
-// lib/data/order_service_api.dart
+// lib/data/services/order_service_api.dart
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:mobile/domain/models/order_service_model.dart';
-import 'package:mobile/domain/models/stock_model.dart';
-import 'package:mobile/domain/models/user_model.dart';
-
+import 'package:mobile/core/utils/logger.dart';
+import '../../domain/models/user_model.dart';
+import '../../domain/models/stock_model.dart';
+import '../../domain/models/order_service_model.dart';
 
 class OrderServiceApi {
   final http.Client client;
@@ -33,15 +33,40 @@ class OrderServiceApi {
     }
   }
 
+  Future<List<OrderServiceModel>> fetchOrders() async {
+    final response = await client.get(Uri.parse('$baseUrl/ordemservico'));
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonList = jsonDecode(response.body);
+      return jsonList.map((json) => OrderServiceModel.fromJson(json)).toList();
+    } else {
+      throw Exception('Falha ao buscar ordens de serviço');
+    }
+  }
+
   Future<OrderServiceModel> createOrder(Map<String, dynamic> data) async {
     final response = await client.post(
       Uri.parse('$baseUrl/ordemservico'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(data),
     );
+
+    appLogger.i('Resposta da API para /ordemservico');
+    appLogger.d('Status da Resposta: ${response.statusCode}');
+    appLogger.d('Corpo da Resposta: ${response.body}');
+
     if (response.statusCode == 201) {
-      final jsonResponse = jsonDecode(response.body);
-      return OrderServiceModel.fromJson(jsonResponse);
+      try {
+        final jsonResponse = jsonDecode(response.body);
+        return OrderServiceModel.fromJson(jsonResponse);
+      } catch (e, st) {
+        // NOVO: Captura o erro específico da desserialização
+        appLogger.e(
+          'Erro de desserialização da resposta JSON:',
+          error: e,
+          stackTrace: st,
+        );
+        throw Exception('Erro ao processar dados da Ordem de Serviço');
+      }
     } else {
       final jsonError = jsonDecode(response.body);
       throw Exception(jsonError['erro'] ?? 'Falha ao criar ordem de serviço');

@@ -17,4 +17,6 @@ abstract class OrderServiceRepository {
 
   Future<List<UserModel>> getUsers();
   Future<List<StockModel>> getParts();
+  // NOVO: Adicionamos o método ao contrato
+  Future<List<OrderServiceModel>> getOrders(); 
 }

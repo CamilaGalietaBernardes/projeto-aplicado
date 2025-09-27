@@ -83,27 +83,27 @@ class ScaffoldHome extends StatelessWidget {
             // Exemplo para o item "Perfil"
             BottomNavigationBarItem(
               icon: _buildSvgIcon(
-                'assets/icons/check.svg',
+                'assets/icons/estoque.svg',
                 color: unselectedColor,
               ),
               activeIcon: _buildSvgIcon(
-                'assets/icons/check.svg',
+                'assets/icons/estoque.svg',
                 color: selectedColor,
               ),
-              label: 'Status',
+              label: 'Estoque',
             ),
 
             // Exemplo para o item "Ajustes"
             BottomNavigationBarItem(
               icon: _buildSvgIcon(
-                'assets/icons/dollar.svg',
+                'assets/icons/rela.svg',
                 color: unselectedColor,
               ),
               activeIcon: _buildSvgIcon(
-                'assets/icons/dollar.svg',
+                'assets/icons/rela.svg',
                 color: selectedColor,
               ),
-              label: 'Financeiro',
+              label: 'Relatorios',
             ),
           ],
         ),
