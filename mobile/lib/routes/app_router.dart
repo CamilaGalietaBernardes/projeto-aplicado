@@ -6,8 +6,11 @@ import 'package:mobile/features/views/children/order_view.dart';
 import 'package:mobile/features/views/children/homechild2_view.dart';
 import 'package:mobile/features/views/children/homechild3_view.dart';
 import 'package:mobile/features/views/children/setting_view.dart';
+import 'package:mobile/features/views/children/stock_view.dart';
+import 'package:mobile/features/views/children/stock_alerts_view.dart';
+import 'package:mobile/features/views/children/user_list_view.dart';
+import 'package:mobile/features/views/children/notifications_view.dart';
 import 'package:mobile/features/views/home_view.dart';
-import 'package:mobile/features/views/profile_view.dart';
 import 'package:mobile/presentation/shared_widgets/scaffold_home.dart';
 import 'package:mobile/routes/router_notifier.dart';
 
@@ -74,14 +77,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // A segunda rama do Shell (índice 1): Perfil
+          // A segunda rama do Shell (índice 1): Estoque
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/profile',
-                name: 'profile',
-                builder: (context, state) => const ProfileView(),
-                routes: const [],
+                path: '/stock',
+                name: 'stock',
+                builder: (context, state) => const StockView(),
+                routes: [
+                  GoRoute(
+                    path: 'alerts',
+                    name: 'stockAlerts',
+                    builder: (context, state) => const StockAlertsView(),
+                  ),
+                ],
               ),
             ],
           ),
@@ -91,8 +100,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/settings',
                 name: 'settings',
-                builder: (context, state) => const SettingsView(),
-                routes: const [],
+                builder: (context, state) => SettingsView(),
+                routes: [
+                  GoRoute(
+                    path: 'users',
+                    name: 'users',
+                    builder: (context, state) => const UserListView(),
+                  ),
+                  GoRoute(
+                    path: 'notifications',
+                    name: 'notifications',
+                    builder: (context, state) => const NotificationsView(),
+                  ),
+                ],
               ),
             ],
           ),

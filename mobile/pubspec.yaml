@@ -42,6 +42,8 @@ dependencies:
   brasil_fields: ^1.15.0
   logger: ^2.6.1
   shared_preferences: ^2.5.3
+  http: ^1.2.0
+  intl: ^0.20.2
 
 
 dev_dependencies:

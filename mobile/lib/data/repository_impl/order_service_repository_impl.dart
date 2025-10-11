@@ -63,4 +63,39 @@ class OrderServiceRepositoryImpl implements OrderServiceRepository {
 
     return _api.createOrder(dataMap);
   }
+
+  @override
+  Future<void> updateOrder({
+    required int id,
+    String? tipo,
+    String? setor,
+    String? detalhes,
+    String? status,
+    int? solicitanteId,
+    String? recorrencia,
+    DateTime? data,
+    int? equipamentoId,
+  }) async {
+    final Map<String, dynamic> dataMap = {};
+
+    if (tipo != null) dataMap['tipo'] = tipo;
+    if (setor != null) dataMap['setor'] = setor;
+    if (detalhes != null) dataMap['detalhes'] = detalhes;
+    if (status != null) dataMap['status'] = status;
+    if (solicitanteId != null) dataMap['solicitante_id'] = solicitanteId;
+    if (recorrencia != null) dataMap['recorrencia'] = recorrencia;
+    if (data != null) dataMap['data'] = data.toIso8601String();
+    if (equipamentoId != null) dataMap['equipamento_id'] = equipamentoId;
+
+    appLogger.i('Atualizando Ordem de Serviço ID: $id');
+    appLogger.d('Payload enviado para a API: ${jsonEncode(dataMap)}');
+
+    return _api.updateOrder(id, dataMap);
+  }
+
+  @override
+  Future<void> deleteOrder(int id) async {
+    appLogger.i('Excluindo Ordem de Serviço ID: $id');
+    return _api.deleteOrder(id);
+  }
 }

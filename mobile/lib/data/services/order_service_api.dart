@@ -59,7 +59,6 @@ class OrderServiceApi {
         final jsonResponse = jsonDecode(response.body);
         return OrderServiceModel.fromJson(jsonResponse);
       } catch (e, st) {
-        // NOVO: Captura o erro específico da desserialização
         appLogger.e(
           'Erro de desserialização da resposta JSON:',
           error: e,
@@ -70,6 +69,54 @@ class OrderServiceApi {
     } else {
       final jsonError = jsonDecode(response.body);
       throw Exception(jsonError['erro'] ?? 'Falha ao criar ordem de serviço');
+    }
+  }
+
+  /// PUT /ordemservico/`<id>` - Atualiza uma ordem de serviço
+  Future<void> updateOrder(int id, Map<String, dynamic> data) async {
+    final url = Uri.parse('$baseUrl/ordemservico/$id');
+    final body = jsonEncode(data);
+
+    appLogger.i('PUT Request to: $url');
+    appLogger.d('Request Body: $body');
+
+    final response = await client.put(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: body,
+    );
+
+    appLogger.i('Response Status Code: ${response.statusCode}');
+    appLogger.d('Response Body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      return;
+    } else if (response.statusCode == 404) {
+      throw Exception('Ordem não encontrada');
+    } else {
+      final jsonError = jsonDecode(response.body);
+      throw Exception(jsonError['erro'] ?? 'Falha ao atualizar ordem');
+    }
+  }
+
+  /// DELETE /ordemservico/`<id>` - Exclui uma ordem de serviço
+  Future<void> deleteOrder(int id) async {
+    final url = Uri.parse('$baseUrl/ordemservico/$id');
+
+    appLogger.i('DELETE Request to: $url');
+
+    final response = await client.delete(url);
+
+    appLogger.i('Response Status Code: ${response.statusCode}');
+    appLogger.d('Response Body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      return;
+    } else if (response.statusCode == 404) {
+      throw Exception('Ordem não encontrada');
+    } else {
+      final jsonError = jsonDecode(response.body);
+      throw Exception(jsonError['erro'] ?? 'Falha ao excluir ordem');
     }
   }
 }

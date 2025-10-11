@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/presentation/theme/app_colors.dart';
+import 'package:mobile/view_model/notification_view_model.dart';
 
-class ScaffoldHome extends StatelessWidget {
+class ScaffoldHome extends ConsumerWidget {
   const ScaffoldHome({required this.navigationShell, Key? key})
     : super(key: key);
   final StatefulNavigationShell navigationShell;
@@ -23,9 +25,12 @@ class ScaffoldHome extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final Color selectedColor = AppColors.primaryGreen;
     final Color unselectedColor = AppColors.lightGray;
+
+    // Observa o contador de notificações não lidas
+    final unreadCountAsync = ref.watch(unreadNotificationCountProvider);
 
     return Scaffold(
       backgroundColor: AppColors.accentWhite,
@@ -35,6 +40,26 @@ class ScaffoldHome extends StatelessWidget {
           height: 50, // Ajuste o tamanho conforme necessário
         ),
         actions: [
+          // Badge de notificações
+          IconButton(
+            icon: Badge(
+              label: unreadCountAsync.when(
+                data: (count) => count > 0 ? Text('$count') : null,
+                loading: () => null,
+                error: (_, __) => null,
+              ),
+              isLabelVisible: unreadCountAsync.maybeWhen(
+                data: (count) => count > 0,
+                orElse: () => false,
+              ),
+              child: const Icon(Icons.notifications),
+            ),
+            color: AppColors.primaryGreen,
+            iconSize: 30,
+            onPressed: () {
+              context.pushNamed('notifications');
+            },
+          ),
           IconButton(
             icon: Icon(Icons.person, color: AppColors.primaryGreen, size: 30),
             onPressed: () {},
@@ -103,7 +128,7 @@ class ScaffoldHome extends StatelessWidget {
                 'assets/icons/rela.svg',
                 color: selectedColor,
               ),
-              label: 'Relatorios',
+              label: 'Gestão',
             ),
           ],
         ),

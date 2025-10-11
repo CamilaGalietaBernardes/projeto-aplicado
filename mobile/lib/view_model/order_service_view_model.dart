@@ -67,6 +67,54 @@ class OrderServiceNotifier
       state = AsyncValue.error(e, st);
     }
   }
+
+  /// Atualiza uma ordem de serviço existente
+  Future<bool> updateOrder({
+    required int id,
+    String? tipo,
+    String? setor,
+    String? detalhes,
+    String? status,
+    int? solicitanteId,
+    String? recorrencia,
+    DateTime? data,
+    int? equipamentoId,
+  }) async {
+    try {
+      await _repo.updateOrder(
+        id: id,
+        tipo: tipo,
+        setor: setor,
+        detalhes: detalhes,
+        status: status,
+        solicitanteId: solicitanteId,
+        recorrencia: recorrencia,
+        data: data,
+        equipamentoId: equipamentoId,
+      );
+
+      // Invalida o provedor da lista de ordens
+      _ref.invalidate(orderListProvider);
+      return true;
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+      return false;
+    }
+  }
+
+  /// Exclui uma ordem de serviço
+  Future<bool> deleteOrder(int id) async {
+    try {
+      await _repo.deleteOrder(id);
+
+      // Invalida o provedor da lista de ordens
+      _ref.invalidate(orderListProvider);
+      return true;
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+      return false;
+    }
+  }
 }
 
 // NOVO: Provedor para o termo de busca na lista de ordens

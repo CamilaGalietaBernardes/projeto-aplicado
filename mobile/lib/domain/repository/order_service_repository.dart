@@ -11,12 +11,25 @@ abstract class OrderServiceRepository {
     required int solicitanteId,
     required String recorrencia,
     required DateTime data,
-    int? equipamentoId, // Este já existia
-    int? quantidade, // NOVO: Adicionado 'quantidade'
+    int? equipamentoId,
+    int? quantidade,
   });
+
+  Future<void> updateOrder({
+    required int id,
+    String? tipo,
+    String? setor,
+    String? detalhes,
+    String? status,
+    int? solicitanteId,
+    String? recorrencia,
+    DateTime? data,
+    int? equipamentoId,
+  });
+
+  Future<void> deleteOrder(int id);
 
   Future<List<UserModel>> getUsers();
   Future<List<StockModel>> getParts();
-  // NOVO: Adicionamos o método ao contrato
-  Future<List<OrderServiceModel>> getOrders(); 
+  Future<List<OrderServiceModel>> getOrders();
 }
