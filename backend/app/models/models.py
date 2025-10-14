@@ -89,8 +89,8 @@ class OrdemServico(db.Model):
             "detalhes": self.detalhes, 
             "status": self.status,
             "equipamento": self.equipamento.to_dict() if self.equipamento else None,
-            "solicitante": self.solicitante.to_dict() if self.solicitante else None
-
+            "solicitante": self.solicitante.to_dict() if self.solicitante else None,
+            "data": self.data.strftime("%Y-%m-%d") if self.data else None
         }
 
 class Pecas_Ordem_Servico(db.Model):

@@ -1,16 +1,14 @@
 FROM python:3.9
 
-# Define o diretório de trabalho
 WORKDIR /app
 
-# Copia todo o conteúdo da pasta backend para o contêiner
-# Isso inclui requirements.txt, que será usado logo em seguida.
-COPY backend/ .
+COPY requirements.txt app/requirements.txt
 
-# Instala as dependências a partir do arquivo no diretório atual.
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r app/requirements.txt
+
+COPY wait-for-db.sh /app/wait-for-db.sh
+RUN chmod +x /app/wait-for-db.sh
+
+COPY . /app
 
 EXPOSE 5000
-
-
-CMD gunicorn --bind 0.0.0.0:$PORT 'wsgi:app'

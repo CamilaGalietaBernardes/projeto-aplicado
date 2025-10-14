@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export async function listarOS() {
   const res = await fetch(`${API_URL}/ordemservico`);
@@ -12,7 +12,7 @@ export async function cadastrarOS(dados) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dados)
   });
-  if (!res.ok) throw new Error("Erro ao cadastrar ordem de serviço");
+  if (!res.ok) throw res;
   return res.json();
 }
 
@@ -22,7 +22,7 @@ export async function atualizarOS(id, dados) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dados)
   });
-  if (!res.ok) throw new Error("Erro ao atualizar ordem de serviço");
+  if (!res.ok) throw res;
   return res.json();
 }
 

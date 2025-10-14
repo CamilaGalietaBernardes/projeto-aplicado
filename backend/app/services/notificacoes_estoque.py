@@ -6,6 +6,7 @@ def listar_notificacoes():
         pecas_alerta = Estoque.query.filter(Estoque.qtd <= Estoque.qtd_min).all()
         alertas = [{
             "id": p.id,
+            "nome_peca": p.peca.nome,
             "mensagem": f"Peça '{p.peca.nome}' abaixo do mínimo ({p.qtd} un. restantes)"
         } for p in pecas_alerta]
         return json_unicode(alertas, 200)

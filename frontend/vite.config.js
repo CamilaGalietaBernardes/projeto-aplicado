@@ -7,6 +7,9 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      devOptions: {
+        enabled: false // evita cache em modo dev, apagar depois
+      },
       manifest: {
         name: 'Sistema de Manutenção',
         short_name: 'Manutenção',
@@ -24,4 +27,12 @@ export default defineConfig({
       }
     })
   ],
-})
+    server: {
+    host: '0.0.0.0',
+    port: 5173,
+    watch: {
+      usePolling: true,
+      interval: 100  // você pode ajustar o intervalo se necessário
+    }
+  }
+});
