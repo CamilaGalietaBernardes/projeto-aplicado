@@ -52,8 +52,24 @@ export default function Manutencao() {
       setModalAberto(false);
       setOrdemEdicao(null);
     } catch (e) {
-      toast.error("Erro ao salvar ordem");
-    }
+        try {
+          // Este e pode ser o objeto Response do fetch, tenta ler o JSON e mostrar a mensagem
+          if (e instanceof Response) {
+            e.json().then(errorData => {
+              toast.error(errorData.erro || "Erro ao salvar ordem");
+            }).catch(() => {
+              toast.error("Erro ao salvar ordem");
+            });
+          } else if (e.message) {
+            // Se for erro JS normal com mensagem
+            toast.error(e.message);
+          } else {
+            toast.error("Erro ao salvar ordem");
+          }
+        } catch {
+          toast.error("Erro ao salvar ordem");
+        }
+      }
   };
 
   const handleEditar = (ordem) => {

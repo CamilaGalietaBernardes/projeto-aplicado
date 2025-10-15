@@ -6,7 +6,7 @@ export function salvarUsuarios(usuarios) {
   localStorage.setItem("usuarios", JSON.stringify(usuarios));
 }
 
-const API_URL = "https://projeto-aplicado.onrender.com";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export async function autenticar(usuario, senha) {
   const response = await fetch(`${API_URL}/login`, {

@@ -18,7 +18,7 @@ export default function Relatorios() {
 
 const carregarEstoque = async () => {
     try {
-      const response = await fetch("https://projeto-aplicado.onrender.com/peca");
+      const response = await fetch("http://localhost:5001/peca");
       const dados = await response.json();
       const dadosFormatados = dados.map((e) => ({
         nome: e.peca,
@@ -34,7 +34,7 @@ const carregarEstoque = async () => {
 
   const carregarManutencoes = async () => {
     try {
-      const response = await fetch("https://projeto-aplicado.onrender.com/ordemservico");
+      const response = await fetch("http://localhost:5001/ordemservico");
       const dados = await response.json();
       const manutencoesFormatadas = dados.map((o) => ({
         id: o.id,

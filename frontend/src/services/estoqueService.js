@@ -1,4 +1,4 @@
-const API_URL = "https://projeto-aplicado.onrender.com";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export async function listarEstoque() {
   const res = await fetch(`${API_URL}/peca`);
