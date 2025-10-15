@@ -64,9 +64,9 @@ def nova_ordem(data):
                 quantidade = quantidade
             )
             db.session.add(uso_os)
+            print(f"****************Peça debitada: {peca_id} e {quantidade}***************") # <-- CORRIGIDO: O print foi movido aqui
         
         db.session.commit()
-        print(f"****************Peça debitada: {peca_id} e {quantidade}***************")
         return None, ordem
     
     except Exception as e:
