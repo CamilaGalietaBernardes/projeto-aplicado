@@ -7,6 +7,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer
 } from "recharts";
 import * as XLSX from "xlsx";
+import { API_URL } from "../config.js";
 
 
 export default function Relatorios() {
@@ -18,7 +19,7 @@ export default function Relatorios() {
 
 const carregarEstoque = async () => {
     try {
-      const response = await fetch("https://projeto-aplicado.onrender.com/peca");
+      const response = await fetch(`${API_URL}/peca`);
       const dados = await response.json();
       const dadosFormatados = dados.map((e) => ({
         nome: e.peca,
@@ -34,7 +35,7 @@ const carregarEstoque = async () => {
 
   const carregarManutencoes = async () => {
     try {
-      const response = await fetch("https://projeto-aplicado.onrender.com/ordemservico");
+      const response = await fetch(`${API_URL}/ordemservico`);
       const dados = await response.json();
       const manutencoesFormatadas = dados.map((o) => ({
         id: o.id,

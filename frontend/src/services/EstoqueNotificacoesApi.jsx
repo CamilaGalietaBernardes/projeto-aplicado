@@ -1,6 +1,8 @@
+import { API_URL } from '../config.js';
+
 export const buscarNotificacoesEstoque = async () => {
   try {
-    const res = await fetch("https://projeto-aplicado.onrender.com");
+    const res = await fetch(`${API_URL}/estoque/notificacoes`);
     if (!res.ok) throw new Error("Erro ao buscar notificações de estoque");
     const dados = await res.json();
     return dados;

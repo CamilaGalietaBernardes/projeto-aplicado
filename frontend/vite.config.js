@@ -2,6 +2,16 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+const getProxyTarget = () => {
+  if (process.env.VITE_API_URL)  return process.env.VITE_API_URL;
+
+  if (process.env.IN_DOCKER === 'true')  return "http://app:5000"
+
+  return "http://localhost:5000"
+}
+
+const getProdApi = () => 'https://projeto-aplicado.onrender.com'
+
 export default defineConfig({
   plugins: [
     react(),
@@ -18,10 +28,25 @@ export default defineConfig({
           {
             src: '/vite.svg',
             sizes: '192x192',
-            type: 'image/svg+xml'
-          }
-        ]
-      }
-    })
+            type: 'image/svg+xml',
+          },
+        ],
+      },
+    }),
   ],
+  server: {
+    host: true,      
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: getProxyTarget(), 
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
+  },
+
+  define: {
+    __API_URL__: JSON.stringify(getProdApi()),
+  }
 })

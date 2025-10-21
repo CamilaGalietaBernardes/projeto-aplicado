@@ -8,7 +8,7 @@ import '../../domain/models/user_model.dart';
 /// Serviço que lida diretamente com as chamadas de API de usuários
 class UserApiService {
   final http.Client client;
-  final String baseUrl = 'https://projeto-aplicado.onrender.com';
+  final String baseUrl = 'http://localhost:5000';
 
   UserApiService(this.client);
 

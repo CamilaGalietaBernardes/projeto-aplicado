@@ -1,4 +1,6 @@
+import { API_URL } from "../config";
 import { salvar, ler } from "../utils/storage";
+
 
 const CHAVE_NOTIFICACOES = "notificacoes";
 

@@ -1,4 +1,4 @@
-const API_URL = "https://projeto-aplicado.onrender.com";
+import {API_URL} from '../config.js';
 
 export async function listarOS() {
   const res = await fetch(`${API_URL}/ordemservico`);

@@ -1,0 +1,1 @@
+export const API_URL = import.meta.env.DEV ? '/api' : __API_URL__;

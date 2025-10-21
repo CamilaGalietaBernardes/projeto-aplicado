@@ -4,7 +4,7 @@
 
 Backend desenvolvido em Flask para gerenciar estoque de peças, ordens de serviço, usuários e notificações de reposição. A aplicação utiliza PostgreSQL como banco de dados e está hospedada no Render.
 
-**URL da API:** `https://projeto-aplicado.onrender.com`
+**URL da API:** `http://localhost:5000`
 
 ---
 
@@ -507,7 +507,7 @@ docker-compose up --build
 
 A aplicação está hospedada no Render com PostgreSQL gerenciado.
 
-**URL de Produção:** `https://projeto-aplicado.onrender.com`
+**URL de Produção:** `http://localhost:5000`
 
 ### Variáveis de Ambiente em Produção
 ```env

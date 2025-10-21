@@ -1,4 +1,4 @@
-const API_URL = "https://projeto-aplicado.onrender.com";
+import { API_URL } from '../config.js';
 
 export async function listarEstoque() {
   const res = await fetch(`${API_URL}/peca`);

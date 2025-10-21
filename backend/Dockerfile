@@ -1,16 +1,15 @@
 FROM python:3.9
 
-# Define o diretório de trabalho
+
 WORKDIR /app
 
-# Copia todo o conteúdo da pasta backend para o contêiner
-# Isso inclui requirements.txt, que será usado logo em seguida.
-COPY backend/ .
+COPY . .
 
-# Instala as dependências a partir do arquivo no diretório atual.
+
+RUN chmod +x ./wait-for-db.sh
 RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 5000
 
+CMD sh -c "./wait-for-db.sh && flask run --host=0.0.0.0 --reload"
 
-CMD gunicorn --bind 0.0.0.0:$PORT 'wsgi:app'

@@ -279,7 +279,7 @@ mobile/lib/
 ## 🔧 Troubleshooting
 
 ### Erro ao carregar estoque
-- Verificar se backend está online (`https://projeto-aplicado.onrender.com`)
+- Verificar se backend está online (`http://localhost:5000`)
 - Verificar logs no console (appLogger)
 - Verificar status code da resposta
 

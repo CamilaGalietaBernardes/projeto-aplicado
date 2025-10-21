@@ -8,7 +8,7 @@ import '../../domain/models/stock_model.dart';
 /// Serviço que lida diretamente com as chamadas de API de estoque
 class StockApiService {
   final http.Client client;
-  final String baseUrl = 'https://projeto-aplicado.onrender.com';
+  final String baseUrl = 'http://localhost:5000';
 
   StockApiService(this.client);
 

@@ -10,7 +10,7 @@ import 'package:mobile/domain/models/user_model.dart';
 class AuthApiService {
   final http.Client client;
   // A URL base confirmada do Render
-  final String baseUrl = 'https://projeto-aplicado.onrender.com';
+  final String baseUrl = 'http://localhost:5000';
 
   AuthApiService(this.client);
 

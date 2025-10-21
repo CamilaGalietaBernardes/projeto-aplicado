@@ -161,7 +161,7 @@ mobile/lib/
 
 ## 🔌 Integração com Backend
 
-**Base URL:** `https://projeto-aplicado.onrender.com`
+**Base URL:** `http://localhost:5000`
 
 ### Endpoints Utilizados
 
