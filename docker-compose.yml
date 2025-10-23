@@ -29,6 +29,8 @@ services:
     working_dir: /app
     volumes:
       - ./backend:/app
+    ports:
+      - "6000:6000"
     depends_on:
       db: 
         condition: service_healthy
@@ -49,7 +51,7 @@ services:
     command: ["sh", "-c", "cp .env.docker .env && npm ci || npm install && npm run dev -- --host 0.0.0.0 --port 5173"]
     environment:
     - IN_DOCKER=true
-    - VITE_API_URL=http://app:5000
+    - VITE_API_URL=http://app:6000
     networks:
       - gestao_estoque_network
 

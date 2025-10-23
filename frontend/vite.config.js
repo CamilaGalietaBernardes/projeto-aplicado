@@ -5,9 +5,9 @@ import { VitePWA } from 'vite-plugin-pwa'
 const getProxyTarget = () => {
   if (process.env.VITE_API_URL)  return process.env.VITE_API_URL;
 
-  if (process.env.IN_DOCKER === 'true')  return "http://app:5000"
+  if (process.env.IN_DOCKER === 'true')  return "http://app:6000"
 
-  return "http://localhost:5000"
+  return "http://localhost:6000"
 }
 
 const getProdApi = () => 'https://projeto-aplicado.onrender.com'
