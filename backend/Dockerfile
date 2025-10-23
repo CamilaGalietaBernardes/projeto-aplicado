@@ -1,15 +1,18 @@
 FROM python:3.9
 
-
 WORKDIR /app
+
+# Copia apenas dependências primeiro (para aproveitar cache)
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Depois copia o resto do código
+COPY wait-for-db.sh /app/wait-for-db.sh
+
+RUN chmod +x ./wait-for-db.sh
 
 COPY . .
 
-
-RUN chmod +x ./wait-for-db.sh
-RUN pip install --no-cache-dir -r requirements.txt
-
+ENV FLASK_APP=app.py
 EXPOSE 5000
-
-CMD sh -c "./wait-for-db.sh && flask run --host=0.0.0.0 --reload"
-

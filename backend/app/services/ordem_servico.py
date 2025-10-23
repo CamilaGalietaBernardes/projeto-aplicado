@@ -38,10 +38,12 @@ def nova_ordem(data):
         pecas = data.get("pecas_utilizadas", [])
         for p in pecas:
             peca_id = p.get("peca_id")
+            estoque = Estoque.query.filter_by(peca_id=peca_id).first()
+            peca_nome = estoque.peca.nome if estoque and estoque.peca else f"ID {peca_id}"
             try:
                 quantidade = int(p.get("quantidade"))
             except (TypeError, ValueError):
-                raise Exception(f"Quantidade inválida para a peça {peca_id}")
+                raise Exception(f"Quantidade inválida para a peça {peca_nome}")
             
             if peca_id is None or quantidade is None:
                 raise Exception("Dados de peças incompletos")
@@ -50,9 +52,9 @@ def nova_ordem(data):
 
             estoque = Estoque.query.filter_by(peca_id=peca_id).first()
             if not estoque:
-                raise Exception(f"Estoque da peça {peca_id} não encontrado!")
+                raise Exception(f"Estoque da peça {peca_nome} não encontrado!")
             if estoque.qtd < quantidade:
-                raise Exception(f"Estoque insuficiente para a peça {peca_id}!")
+                raise Exception(f"Estoque insuficiente para a peça {peca_nome}!")
             
             estoque.qtd -= quantidade
 
@@ -62,9 +64,9 @@ def nova_ordem(data):
                 quantidade = quantidade
             )
             db.session.add(uso_os)
-            print(f"****************Peça debitada: {peca_id} e {quantidade}***************") # <-- CORRIGIDO: O print foi movido aqui
         
         db.session.commit()
+        print(f"****************Peça debitada: {peca_id} e {quantidade}***************")
         return None, ordem
     
     except Exception as e:
@@ -77,7 +79,26 @@ def atualizar_ordem(id, data):
     ordem = OrdemServico.query.get(id)
     if not ordem:
         return "Ordem não encontrada", None
+    pecas = data.get("pecas_utilizadas", [])
+    for p in pecas:
+        peca_id = p.get("peca_id")
+        estoque = Estoque.query.filter_by(peca_id=peca_id).first()
+        peca_nome = estoque.peca.nome if estoque and estoque.peca else f"ID {peca_id}"
+        try:
+            quantidade = int(p.get("quantidade"))
+        except (TypeError, ValueError):
+            return f"Quantidade inválida para a peça {peca_nome}", None
 
+        if peca_id is None or quantidade is None:
+            return "Dados de peças incompletos", None
+        if not isinstance(quantidade, int) or quantidade <= 0:
+            return "Quantidade invalida para a peça selecionada!", None
+
+        if not estoque:
+            return f"Estoque da peça {peca_nome} não encontrado!", None
+        if estoque.qtd < quantidade:
+            return f"Estoque insuficiente para a peça {peca_nome}!", None
+        
     ordem.equipamento_id = data.get(
         "equipamento", {}).get("id", ordem.equipamento_id)
     ordem.solicitante_id = data.get(
