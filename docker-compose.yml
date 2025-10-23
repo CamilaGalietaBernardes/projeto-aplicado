@@ -4,8 +4,7 @@ services:
     container_name: gestao_estoque_db
     env_file: 
       - .env
-      - .env.docker
-      - .env.local
+      - ./backend/.env.docker
 
     volumes:
       - pg_data:/var/lib/postgresql/data
@@ -23,8 +22,7 @@ services:
     build: ./backend
     env_file: 
       - .env
-      - .env.docker
-      - .env.local
+      - ./backend/.env.docker
     container_name: gestao_estoque_app
     working_dir: /app
     volumes:
