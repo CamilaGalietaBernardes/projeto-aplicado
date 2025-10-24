@@ -7,12 +7,7 @@ COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Depois copia o resto do código
-COPY wait-for-db.sh /app/wait-for-db.sh
+EXPOSE 6000
 
-RUN chmod +x ./wait-for-db.sh
+CMD sh -c "./wait-for-db.sh && flask run --host=0.0.0.0  --port=6000 --reload"
 
-COPY . .
-
-ENV FLASK_APP=app.py
-EXPOSE 5000

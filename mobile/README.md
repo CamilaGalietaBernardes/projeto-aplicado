@@ -161,7 +161,7 @@ mobile/lib/
 
 ## 🔌 Integração com Backend
 
-**Base URL:** `http://localhost:5000`
+**Base URL:** `http://localhost:6000`
 
 ### Endpoints Utilizados
 

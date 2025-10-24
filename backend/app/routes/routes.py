@@ -163,7 +163,7 @@ def alertas_estoque():
         return jsonify({"erro": erro}), 500
     return jsonify([e.to_dict() for e in dados]), 200
 
-@bp.route("/notificacoes-estoque", methods = ["GET"])
+@bp.route("/estoque/notificacoes", methods = ["GET"])
 def get_notificacoes():
     return listar_notificacoes()
 
