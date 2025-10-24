@@ -1,14 +1,16 @@
 // lib/features/home/presentation/views/settings_view.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/presentation/theme/app_colors.dart';
+import 'package:mobile/core/providers/providers.dart';
 
-class SettingsView extends StatelessWidget {
+class SettingsView extends ConsumerWidget {
   const SettingsView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: AppColors.accentWhite,
       appBar: AppBar(
@@ -66,7 +68,7 @@ class SettingsView extends StatelessWidget {
                   subtitle: const Text('Editar informações pessoais'),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
-                    // TODO: Navegar para perfil
+                    context.goNamed('profile');
                   },
                 ),
                 const Divider(height: 1),
@@ -100,6 +102,19 @@ class SettingsView extends StatelessWidget {
             color: AppColors.lightGray,
             child: Column(
               children: [
+                ListTile(
+                  leading: const Icon(
+                    Icons.bar_chart,
+                    color: AppColors.primaryGreen,
+                  ),
+                  title: const Text('Relatórios'),
+                  subtitle: const Text('Visualizar estatísticas e métricas'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    context.goNamed('reports');
+                  },
+                ),
+                const Divider(height: 1),
                 ListTile(
                   leading: const Icon(
                     Icons.notifications,
@@ -170,24 +185,19 @@ class SettingsView extends StatelessWidget {
 
           // Botão de Logout
           ElevatedButton.icon(
-            onPressed: () {
-              // TODO: Implementar logout
-              showDialog(
+            onPressed: () async {
+              final shouldLogout = await showDialog<bool>(
                 context: context,
                 builder: (context) => AlertDialog(
                   title: const Text('Sair'),
                   content: const Text('Deseja realmente sair do aplicativo?'),
                   actions: [
                     TextButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => Navigator.pop(context, false),
                       child: const Text('Cancelar'),
                     ),
                     TextButton(
-                      onPressed: () {
-                        // TODO: Limpar sessão e voltar para login
-                        Navigator.pop(context);
-                        context.goNamed('login');
-                      },
+                      onPressed: () => Navigator.pop(context, true),
                       child: const Text(
                         'Sair',
                         style: TextStyle(color: Colors.red),
@@ -196,6 +206,16 @@ class SettingsView extends StatelessWidget {
                   ],
                 ),
               );
+
+              if (shouldLogout == true && context.mounted) {
+                // Limpa a sessão usando o loginViewModel
+                await ref.read(loginViewModelProvider.notifier).signOut();
+
+                // Redireciona para o login
+                if (context.mounted) {
+                  context.goNamed('login');
+                }
+              }
             },
             icon: const Icon(Icons.logout),
             label: const Text('Sair da Conta'),

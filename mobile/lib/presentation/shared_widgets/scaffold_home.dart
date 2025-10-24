@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/presentation/theme/app_colors.dart';
 import 'package:mobile/view_model/notification_view_model.dart';
+import 'package:mobile/core/providers/providers.dart';
 
 class ScaffoldHome extends ConsumerWidget {
   const ScaffoldHome({required this.navigationShell, Key? key})
@@ -60,9 +61,12 @@ class ScaffoldHome extends ConsumerWidget {
               context.pushNamed('notifications');
             },
           ),
+          // Ícone do usuário com menu popup
           IconButton(
-            icon: Icon(Icons.person, color: AppColors.primaryGreen, size: 30),
-            onPressed: () {},
+            icon: const Icon(Icons.person, color: AppColors.primaryGreen, size: 30),
+            onPressed: () {
+              _showUserMenu(context, ref);
+            },
           ),
         ],
         centerTitle: false,
@@ -88,6 +92,8 @@ class ScaffoldHome extends ConsumerWidget {
           backgroundColor: AppColors.black,
           selectedItemColor: selectedColor, // Usa a cor definida
           unselectedItemColor: unselectedColor, // Usa a cor definida
+          selectedLabelStyle: const TextStyle(color: Colors.white),
+          unselectedLabelStyle: const TextStyle(color: Colors.white),
           type: BottomNavigationBarType.fixed,
           items: [
             // Exemplo para o item "Inicio"
@@ -132,6 +138,178 @@ class ScaffoldHome extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showUserMenu(BuildContext context, WidgetRef ref) {
+    final userSession = ref.read(sessionProvider);
+
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        MediaQuery.of(context).size.width - 50, // x
+        kToolbarHeight + 10, // y (abaixo do AppBar)
+        10, // right
+        0, // bottom
+      ),
+      items: <PopupMenuEntry<String>>[
+        // Header com informações do usuário
+        PopupMenuItem<String>(
+          enabled: false,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  CircleAvatar(
+                    backgroundColor: AppColors.primaryGreen,
+                    radius: 20,
+                    child: Text(
+                      _getInitials(userSession?.nome ?? 'U'),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          userSession?.nome ?? 'Usuário',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          userSession?.email ?? '',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const Divider(height: 16),
+            ],
+          ),
+        ),
+
+        // Meu Perfil
+        PopupMenuItem<String>(
+          value: 'profile',
+          child: const Row(
+            children: [
+              Icon(Icons.person_outline, color: AppColors.primaryGreen),
+              SizedBox(width: 12),
+              Text('Meu Perfil'),
+            ],
+          ),
+        ),
+
+        // Configurações
+        PopupMenuItem<String>(
+          value: 'settings',
+          child: const Row(
+            children: [
+              Icon(Icons.settings_outlined, color: AppColors.primaryGreen),
+              SizedBox(width: 12),
+              Text('Configurações'),
+            ],
+          ),
+        ),
+
+        const PopupMenuDivider(),
+
+        // Sair
+        PopupMenuItem<String>(
+          value: 'logout',
+          child: const Row(
+            children: [
+              Icon(Icons.logout, color: Colors.red),
+              SizedBox(width: 12),
+              Text(
+                'Sair',
+                style: TextStyle(color: Colors.red),
+              ),
+            ],
+          ),
+        ),
+      ],
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+    ).then((value) {
+      if (value != null) {
+        _handleMenuAction(context, ref, value);
+      }
+    });
+  }
+
+  String _getInitials(String name) {
+    final parts = name.trim().split(' ');
+    if (parts.length == 1) {
+      return parts[0][0].toUpperCase();
+    }
+    return '${parts[0][0]}${parts[parts.length - 1][0]}'.toUpperCase();
+  }
+
+  void _handleMenuAction(BuildContext context, WidgetRef ref, String action) {
+    switch (action) {
+      case 'profile':
+        context.goNamed('profile');
+        break;
+
+      case 'settings':
+        context.goNamed('settings');
+        break;
+
+      case 'logout':
+        _showLogoutConfirmation(context, ref);
+        break;
+    }
+  }
+
+  void _showLogoutConfirmation(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sair'),
+        content: const Text('Deseja realmente sair do aplicativo?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+
+              // Limpa a sessão
+              await ref.read(loginViewModelProvider.notifier).signOut();
+
+              // Redireciona para login
+              if (context.mounted) {
+                context.goNamed('login');
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Sair'),
+          ),
+        ],
       ),
     );
   }

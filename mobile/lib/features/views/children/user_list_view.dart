@@ -130,8 +130,11 @@ class _UserListViewState extends ConsumerState<UserListView> {
           _showUserFormDialog(context, isEdit: false);
         },
         backgroundColor: AppColors.primaryGreen,
-        icon: const Icon(Icons.person_add),
-        label: const Text('Novo Usuário'),
+        icon: const Icon(Icons.person_add, color: Colors.white),
+        label: const Text(
+          'Novo Usuário',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     );
   }
@@ -458,7 +461,10 @@ class _UserListViewState extends ConsumerState<UserListView> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryGreen,
             ),
-            child: Text(isEdit ? 'Salvar' : 'Criar'),
+            child: Text(
+              isEdit ? 'Salvar' : 'Criar',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
