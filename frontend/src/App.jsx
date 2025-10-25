@@ -6,6 +6,7 @@ import Manutencao from "./pages/Manutencao";
 import Relatorios from "./pages/Relatorios";
 import RotaProtegida from "./components/RotaProtegida";
 import DashboardLayout from "./components/DashboardLayout";
+import Home from './pages/Home';
 
 function App() {
   return (
@@ -14,21 +15,31 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route
-          path="/estoque"
+          path="/"
           element={
             <RotaProtegida>
               <DashboardLayout>
-                <Estoque />
+                <Home />
               </DashboardLayout>
             </RotaProtegida>
           }
         />
         <Route
-          path="/"
+          path="/home"
           element={
             <RotaProtegida>
               <DashboardLayout>
-                <Manutencao />
+                <Home />
+              </DashboardLayout>
+            </RotaProtegida>
+          }
+        />
+        <Route
+          path="/estoque"
+          element={
+            <RotaProtegida>
+              <DashboardLayout>
+                <Estoque />
               </DashboardLayout>
             </RotaProtegida>
           }

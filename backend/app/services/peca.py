@@ -16,6 +16,14 @@ def nova_peca(data):
 
     if Peca.query.filter_by(nome=data["nome"], categoria=data["categoria"]).first():
         return "Peça já cadastrada", None
+    
+    try:
+        qtd = int(data["qtd"])
+        qtd_min = int(data["qtd_min"])
+        if qtd < 0 or qtd_min < 0:
+            return "Quantidade e quantidade mínima devem ser valores inteiros positivos", None
+    except (ValueError, TypeError):
+        return "Quantidade e quantidade mínima devem ser números inteiros", None
 
     try:
         nova = Peca(nome=data["nome"], categoria=data["categoria"])
@@ -36,6 +44,22 @@ def atualizar_peca(id, data):
     estoque = Estoque.query.options(joinedload(Estoque.peca)).get(id)
     if not estoque:
         return "Peça/Estoque não encontrado", None
+    
+    try:
+        if "qtd" in data:
+            qtd = int(data["qtd"])
+            if qtd < 0:
+                return "Quantidade deve ser um número inteiro positivo", None
+            estoque.qtd = qtd
+
+        if "qtd_min" in data:
+            qtd_min = int(data["qtd_min"])
+            if qtd_min < 0:
+                return "Quantidade mínima deve ser um número inteiro positivo", None
+            estoque.qtd_min = qtd_min
+    except (ValueError, TypeError):
+        return "Quantidade e quantidade mínima devem ser números inteiros", None
+
 
     estoque.peca.nome = data.get("nome", estoque.peca.nome)
     estoque.peca.categoria = data.get("categoria", estoque.peca.categoria)

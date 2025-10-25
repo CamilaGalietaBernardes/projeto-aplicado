@@ -3,16 +3,44 @@ import toast from "react-hot-toast";
 import { PencilIcon, TrashIcon, PlusIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import EstoqueModal from "../components/EstoqueModal";
 import { listarEstoque, cadastrarPeca, atualizarPeca, excluirPeca } from "../services/estoqueService";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Estoque() {
   const [itens, setItens] = useState([]);
   const [busca, setBusca] = useState("");
   const [modalAberto, setModalAberto] = useState(false);
   const [itemEdicao, setItemEdicao] = useState(null);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const fecharModal = () => {
+      setModalAberto(false);
+      setItemEdicao(null);
+      navigate("/estoque", { replace: true });
+    };
 
   useEffect(() => {
     carregarEstoque();
   }, []);
+
+  useEffect(() => {
+    const query = new URLSearchParams(location.search);
+    const abrirPecaId = query.get("abrirPeca");
+    
+    if (abrirPecaId && itens.length > 0) {
+      const item = itens.find(it => String(it.id) === abrirPecaId);
+      if (item) {
+        setItemEdicao({
+          ...item,
+          nome: item.peca,
+          quantidade: item.qtd,
+          tipo: item.categoria,
+          qtd_min: item.qtd_min
+        });
+        setModalAberto(true);
+      }
+    }
+  }, [location.search, itens]);
 
   async function carregarEstoque() {
     try {
@@ -23,40 +51,40 @@ export default function Estoque() {
     }
   }
 
-  const handleSalvar = async (form) => {
-    if (!form.nome || !form.quantidade || !form.qtd_min) {
-      toast.error("Preencha todos os campos!");
-      return;
+const handleSalvar = async (form) => {
+  if (!form.nome || !form.quantidade || !form.qtd_min) {
+    toast.error("Preencha todos os campos!");
+    return;
+  }
+
+  try {
+    if (itemEdicao) {
+      await atualizarPeca(itemEdicao.id, {
+        nome: form.nome,
+        qtd: Number(form.quantidade),
+        categoria: form.tipo || "Outro", 
+        qtd_min: Number(form.qtd_min)
+      });
+      toast.success("Item atualizado!");
+    } else {
+      const dados = {
+        nome: form.nome,
+        qtd: Number(form.quantidade),
+        categoria: form.tipo || "Outro",
+        qtd_min: Number(form.qtd_min),
+      };
+      await cadastrarPeca(dados);
+      toast.success("Item adicionado!");
     }
 
-    console.log(form)
-    try {
-      if (itemEdicao) {
-        await atualizarPeca(itemEdicao.id, {
-          nome: form.nome,
-          qtd: Number(form.quantidade),
-          categoria: form.tipo || "Outro", 
-          qtd_min: Number(form.qtd_min)
-        });
-        toast.success("Item atualizado!");
-      } else {
-        const dados = {
-          nome: form.nome,
-          qtd: Number(form.quantidade),
-          categoria: form.tipo || "Outro",
-          qtd_min: Number(form.qtd_min),
-        };
-        await cadastrarPeca(dados);
-        toast.success("Item adicionado!");
+        setModalAberto(false);
+        setItemEdicao(null);
+        navigate("/estoque", { replace: true });
+        carregarEstoque();
+      } catch (e) {
+        toast.error(e.message);
       }
-
-      setModalAberto(false);
-      setItemEdicao(null);
-      carregarEstoque();
-    } catch (e) {
-      toast.error(e.message);
-    }
-  };
+    };
 
   const handleEditar = (item) => {
     setItemEdicao({
@@ -136,9 +164,10 @@ export default function Estoque() {
       </div>
       <EstoqueModal
         open={modalAberto}
-        onClose={() => { setModalAberto(false); setItemEdicao(null); }}
+        onClose={fecharModal}
         onSalvar={handleSalvar}
         itemEdicao={itemEdicao}
+        editandoId={itemEdicao?.id}
       />
     </div>
   );

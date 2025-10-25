@@ -13,9 +13,20 @@ export async function cadastrarPeca(dados) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dados)
   });
-  if (!res.ok) throw new Error("Erro ao cadastrar peça");
-  return res.json();
-}
+
+  if (!res.ok) {
+    let msg = "Erro ao cadastrar peça";
+    try {
+      const erro = await res.json();
+      if (erro && (erro.erro || erro.message)) {
+        msg = erro.erro || erro.message;
+      }
+    } catch (e) {
+    }
+    throw new Error(msg);
+  }
+    return res.json();
+  }
 
 export async function atualizarPeca(id, dados) {
   const res = await fetch(`${API_URL}/peca/${id}`, {
