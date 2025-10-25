@@ -131,9 +131,10 @@ def listar_ordens_route():
 @bp.route("/ordemservico", methods=["POST"])
 def nova_ordem_route():
     data = request.get_json()
-    erro, ordem = nova_ordem(data)
+    erro, ordem, _ = nova_ordem(data)
     if erro:
-        return json_unicode({"erro": erro}, 400)
+        status = 400 if erro.startswith("Campo") else 500
+        return json_unicode({"erro": erro}, status)
     return json_unicode(ordem.to_dict(), 201)
 
 
@@ -142,7 +143,8 @@ def atualizar_ordem_route(id):
     data = request.get_json()
     erro, ordem = atualizar_ordem(id, data)
     if erro:
-        return json_unicode({"erro": erro}, 400)
+        status = 400 if erro.startswith("Campo") else 500
+        return json_unicode({"erro": erro}, status)
     return json_unicode(ordem.to_dict(), 201)
 
 
