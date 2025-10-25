@@ -1,7 +1,7 @@
 from app import db
 from app.models.models import OrdemServico, Pecas_Ordem_Servico, Estoque
 from sqlalchemy.orm import joinedload
-
+from datetime import datetime
 
 def listar_ordens():
     try:
@@ -9,6 +9,16 @@ def listar_ordens():
             joinedload(OrdemServico.equipamento),
             joinedload(OrdemServico.solicitante)
         ).all()
+        # Atualizar status baseado na data
+        hoje = datetime.now().date()
+        for ordem in ordens:
+            if ordem.status.lower() in ["pendente", "em execução", "em andamento"]:
+                ordem.status = "Em Andamento"
+            # Verifica se está atrasada apenas se não estiver concluída
+            if ordem.status != "Concluída":
+                data_ordem = ordem.data.date() if isinstance(ordem.data, datetime) else ordem.data
+                if data_ordem < hoje:
+                    ordem.status = "Atrasada"
         return None, ordens
     except Exception as e:
         return str(e), None

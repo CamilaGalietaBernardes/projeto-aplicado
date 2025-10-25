@@ -64,7 +64,7 @@ const navigateToItem = (notificacao) => {
           <div className="flex items-center gap-4">
             <h1
               className="text-2xl font-bold cursor-pointer"
-              onClick={() => navigate("/estoque")}
+              onClick={() => navigate("/")}
             >
               Sistema de Manutenção
             </h1>
