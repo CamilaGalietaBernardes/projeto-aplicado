@@ -23,38 +23,59 @@ const EstoqueModal = React.memo(function EstoqueModal({
   if (!open) return null;
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" aria-modal="true" role="dialog">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
         <h2 className="text-2xl font-bold mb-4 text-gray-700">
           {editandoId ? "Editar Peça/Ferramenta" : "Nova Peça/Ferramenta"}
         </h2>
-        <input
-          type="text"
-          placeholder="Nome"
-          value={form.nome}
-          onChange={e => setForm(f => ({ ...f, nome: e.target.value }))}
-          className="w-full mb-4 p-2 border rounded"
-        />
-        <input
-          type="number"
-          placeholder="Quantidade"
-          value={form.quantidade}
-          onChange={e => setForm(f => ({ ...f, quantidade: e.target.value }))}
-          className="w-full mb-4 p-2 border rounded"
-        />
-        <input
-          type="text"
-          placeholder="Tipo (Ferramenta/Peça)"
-          value={form.tipo}
-          onChange={e => setForm(f => ({ ...f, tipo: e.target.value }))}
-          className="w-full mb-4 p-2 border rounded"
-        />
-        <input
-          type="number"
-          placeholder="Quantidade Mínima"
-          value={form.qtd_min}
-          onChange={e => setForm(f => ({ ...f, qtd_min: e.target.value }))}
-          className="w-full mb-4 p-2 border rounded"
-        />
+
+        <div>
+          <label htmlFor="nome" className="block text-gray-600 font-semibold mb-1">Nome do item</label>
+          <input
+            id="nome"
+            type="text"
+            placeholder="Nome"
+            value={form.nome}
+            onChange={e => setForm(f => ({ ...f, nome: e.target.value }))}
+            className="w-full mb-4 p-2 border rounded"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="quantidade" className="block text-gray-600 font-semibold mb-1">Quantidade</label>
+          <input
+            id="quantidade"
+            type="number"
+            placeholder="Quantidade"
+            value={form.quantidade}
+            onChange={e => setForm(f => ({ ...f, quantidade: e.target.value }))}
+            className="w-full mb-4 p-2 border rounded"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="tipo">Tipo do item</label>
+          <input
+            id="tipo"
+            type="text"
+            placeholder="Tipo (Ferramenta/Peça)"
+            value={form.tipo}
+            onChange={e => setForm(f => ({ ...f, tipo: e.target.value }))}
+            className="w-full mb-4 p-2 border rounded"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="quantidade_minima">Quantidade mínima</label>
+          <input
+            id="quantidade_minima"
+            type="number"
+            placeholder="Quantidade Mínima"
+            value={form.qtd_min}
+            onChange={e => setForm(f => ({ ...f, qtd_min: e.target.value }))}
+            className="w-full mb-4 p-2 border rounded"
+          />
+        </div>
+        
         <div className="flex justify-end space-x-4">
           <button
             onClick={() => onSalvar(form)}

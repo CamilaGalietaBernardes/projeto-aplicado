@@ -128,59 +128,165 @@ class OrderServiceCard extends ConsumerWidget {
 
   void _showEditDialog(BuildContext context, WidgetRef ref) {
     final statusOptions = ['Aberta', 'Em andamento', 'Concluída', 'Atrasada'];
-    String selectedStatus = order.status ?? 'Aberta';
+    final tipoOptions = ['Preventiva', 'Corretiva', 'Preditiva'];
+    final recorrenciaOptions = ['Única', 'Diária', 'Semanal', 'Mensal', 'Anual'];
+
+    // Controllers para os campos editáveis
+    final setorController = TextEditingController(text: order.setor ?? '');
+    final detalhesController = TextEditingController(text: order.detalhes ?? '');
+
+    // Variáveis de estado para os dropdowns
+    String selectedTipo = tipoOptions.contains(order.tipo) ? order.tipo! : tipoOptions.first;
+    String selectedStatus = statusOptions.contains(order.status) ? order.status! : statusOptions.first;
+    String selectedRecorrencia = recorrenciaOptions.contains(order.recorrencia) ? order.recorrencia! : recorrenciaOptions.first;
 
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Atualizar Status'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Ordem: ${order.equipamento?.peca ?? 'N/A'}',
-                style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 16.h),
-              const Text('Novo Status:'),
-              SizedBox(height: 8.h),
-              DropdownButtonFormField<String>(
-                initialValue: selectedStatus,
-                decoration: const InputDecoration(border: OutlineInputBorder()),
-                items: statusOptions.map((status) {
-                  return DropdownMenuItem(value: status, child: Text(status));
-                }).toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() {
-                      selectedStatus = value;
-                    });
-                  }
-                },
-              ),
-            ],
+          title: const Text('Editar Ordem de Serviço'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Ordem: ${order.equipamento?.peca ?? 'N/A'}',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primaryGreen,
+                  ),
+                ),
+                SizedBox(height: 16.h),
+
+                // Tipo
+                const Text('Tipo:', style: TextStyle(fontWeight: FontWeight.w600)),
+                SizedBox(height: 8.h),
+                DropdownButtonFormField<String>(
+                  initialValue: selectedTipo,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+                  items: tipoOptions.map((tipo) {
+                    return DropdownMenuItem(value: tipo, child: Text(tipo));
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        selectedTipo = value;
+                      });
+                    }
+                  },
+                ),
+                SizedBox(height: 12.h),
+
+                // Setor
+                const Text('Setor:', style: TextStyle(fontWeight: FontWeight.w600)),
+                SizedBox(height: 8.h),
+                TextField(
+                  controller: setorController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    hintText: 'Ex: Manutenção',
+                  ),
+                ),
+                SizedBox(height: 12.h),
+
+                // Status
+                const Text('Status:', style: TextStyle(fontWeight: FontWeight.w600)),
+                SizedBox(height: 8.h),
+                DropdownButtonFormField<String>(
+                  initialValue: selectedStatus,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+                  items: statusOptions.map((status) {
+                    return DropdownMenuItem(value: status, child: Text(status));
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        selectedStatus = value;
+                      });
+                    }
+                  },
+                ),
+                SizedBox(height: 12.h),
+
+                // Recorrência
+                const Text('Recorrência:', style: TextStyle(fontWeight: FontWeight.w600)),
+                SizedBox(height: 8.h),
+                DropdownButtonFormField<String>(
+                  initialValue: selectedRecorrencia,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+                  items: recorrenciaOptions.map((rec) {
+                    return DropdownMenuItem(value: rec, child: Text(rec));
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        selectedRecorrencia = value;
+                      });
+                    }
+                  },
+                ),
+                SizedBox(height: 12.h),
+
+                // Detalhes
+                const Text('Detalhes:', style: TextStyle(fontWeight: FontWeight.w600)),
+                SizedBox(height: 8.h),
+                TextField(
+                  controller: detalhesController,
+                  maxLines: 3,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    hintText: 'Descreva os detalhes da ordem...',
+                  ),
+                ),
+              ],
+            ),
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                setorController.dispose();
+                detalhesController.dispose();
+                Navigator.pop(context);
+              },
               child: const Text('Cancelar'),
             ),
             ElevatedButton(
               onPressed: () async {
                 final success = await ref
                     .read(orderServiceNotifierProvider.notifier)
-                    .updateOrder(id: order.id, status: selectedStatus);
+                    .updateOrder(
+                      id: order.id,
+                      tipo: selectedTipo,
+                      setor: setorController.text.isNotEmpty ? setorController.text : null,
+                      detalhes: detalhesController.text.isNotEmpty ? detalhesController.text : null,
+                      status: selectedStatus,
+                      recorrencia: selectedRecorrencia,
+                    );
 
                 if (context.mounted) {
+                  setorController.dispose();
+                  detalhesController.dispose();
                   Navigator.pop(context);
+
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
                         success
-                            ? 'Status atualizado com sucesso!'
-                            : 'Erro ao atualizar status',
+                            ? 'Ordem atualizada com sucesso!'
+                            : 'Erro ao atualizar ordem',
                       ),
                       backgroundColor: success ? Colors.green : Colors.red,
                     ),

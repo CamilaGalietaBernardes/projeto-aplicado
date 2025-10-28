@@ -10,7 +10,9 @@ import 'package:mobile/features/views/children/stock_view.dart';
 import 'package:mobile/features/views/children/stock_alerts_view.dart';
 import 'package:mobile/features/views/children/user_list_view.dart';
 import 'package:mobile/features/views/children/notifications_view.dart';
+import 'package:mobile/features/views/children/reports_view.dart';
 import 'package:mobile/features/views/home_view.dart';
+import 'package:mobile/features/views/profile_view.dart';
 import 'package:mobile/presentation/shared_widgets/scaffold_home.dart';
 import 'package:mobile/routes/router_notifier.dart';
 
@@ -111,6 +113,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     path: 'notifications',
                     name: 'notifications',
                     builder: (context, state) => const NotificationsView(),
+                  ),
+                  GoRoute(
+                    path: 'reports',
+                    name: 'reports',
+                    builder: (context, state) => const ReportsView(),
+                  ),
+                  GoRoute(
+                    path: 'profile',
+                    name: 'profile',
+                    builder: (context, state) => const ProfileView(),
                   ),
                 ],
               ),

@@ -1,13 +1,15 @@
 FROM python:3.9
 
-
 WORKDIR /app
 
-COPY . .
-
-
-RUN chmod +x ./wait-for-db.sh
+# Copia apenas dependências primeiro (para aproveitar cache)
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
+COPY wait-for-db.sh /app/wait-for-db.sh
+RUN chmod +x /app/wait-for-db.sh
+
+COPY . .
 
 EXPOSE 6000
 

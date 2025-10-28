@@ -149,6 +149,9 @@ export default function Manutencao() {
             <div className="text-gray-600 text-sm">
               Descrição: <span className="font-medium">{ordem.detalhes || "-"}</span>
             </div>
+            <div className="text-gray-600 text-sm">
+              Quantidade: <span className="font-medium">{ordem.quantidade}</span>
+            </div>
             <div className="flex gap-2 mt-3">
               <button
                 onClick={() => handleEditar(ordem)}
