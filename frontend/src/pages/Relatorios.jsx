@@ -27,7 +27,8 @@ const carregarEstoque = async () => {
         quantidade: e.qtd,
         qtd_min: e.qtd_min,
       }));
-      salvar("estoque", dadosFormatados);
+      setEstoque(dadosFormatados);
+      //salvar("estoque", dadosFormatados);
     } catch (error) {
       console.error("Erro ao carregar estoque:", error);
     }
@@ -37,6 +38,7 @@ const carregarEstoque = async () => {
     try {
       const response = await fetch(`${API_URL}/ordemservico`);
       const dados = await response.json();
+      console.log("Dados do backend:", dados); 
       const manutencoesFormatadas = dados.map((o) => ({
         id: o.id,
         equipamento: o.equipamento?.peca || "Sem Nome",
@@ -46,7 +48,8 @@ const carregarEstoque = async () => {
         dataAbertura: new Date(o.data).toLocaleDateString("pt-BR"),
         descricao: o.detalhes,
       }));
-      salvar("manutencao", manutencoesFormatadas);
+      setManutencoes(manutencoesFormatadas);
+      //salvar("manutencao", manutencoesFormatadas);
     } catch (error) {
       console.error("Erro ao carregar manutenções:", error);
     }
@@ -98,16 +101,20 @@ const carregarEstoque = async () => {
 } 
 
   useEffect(() => {
-    Promise.all([carregarEstoque(), carregarManutencoes()]).then(() => {
-      setEstoque(ler("estoque", []));
-      setManutencoes(ler("manutencao", []));
-    });
+    carregarEstoque();
+    carregarManutencoes();
   }, []);
+  // useEffect(() => {
+  //   Promise.all([carregarEstoque(), carregarManutencoes()]).then(() => {
+  //     setEstoque(ler("estoque", []));
+  //     setManutencoes(ler("manutencao", []));
+  //   });
+  // }, []);
 
   // KPIs
   const totalOrdens = manutencoes.length;
   const concluidas = manutencoes.filter(m => m.status === "Concluída").length;
-  const pendentes = manutencoes.filter(m => m.status === "Pendente").length;
+  const emAndamento = manutencoes.filter(m => m.status === "Em Andamento").length;
   const atrasadas = manutencoes.filter(m => m.status === "Atrasada").length;
   const baixoEstoque = estoque.filter(e => 
     typeof e.quantidade === "number" && e.quantidade <= e.qtd_min).length;
@@ -115,7 +122,7 @@ const carregarEstoque = async () => {
   // Dados para gráficos
   const dataStatus = [
     { name: "Concluída", value: concluidas },
-    { name: "Pendente", value: pendentes },
+    { name: "Em Andamento", value: emAndamento },
     { name: "Atrasada", value: atrasadas },
   ];
   const COLORS = ["#059669", "#f59e42", "#dc2626"];
@@ -160,8 +167,8 @@ const carregarEstoque = async () => {
           <span className="text-3xl font-bold text-emerald-700">{concluidas}</span>
         </div>
         <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center">
-          <span className="text-gray-500 text-sm">Pendentes</span>
-          <span className="text-3xl font-bold text-yellow-600">{pendentes}</span>
+          <span className="text-gray-500 text-sm">Em Andamento</span>
+          <span className="text-3xl font-bold text-yellow-600">{emAndamento}</span>
         </div>
         <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center">
           <span className="text-gray-500 text-sm">Atrasadas</span>
@@ -245,8 +252,7 @@ const carregarEstoque = async () => {
           className="border rounded-lg p-2"
         >
           <option value="">Todos os Status</option>
-          <option value="Pendente">Pendente</option>
-          <option value="Em Execução">Em Execução</option>
+          <option value="Em Andamento">Em Andamento</option>
           <option value="Concluída">Concluída</option>
           <option value="Atrasada">Atrasada</option>
         </select>
@@ -303,7 +309,7 @@ const carregarEstoque = async () => {
                   <span className={`px-2 py-1 rounded-full text-xs font-bold
                     ${m.status === "Atrasada" ? "bg-red-100 text-red-700" :
                       m.status === "Concluída" ? "bg-emerald-100 text-emerald-800" :
-                      m.status === "Em Execução" ? "bg-yellow-100 text-yellow-800" :
+                      m.status === "Em Andamento" ? "bg-yellow-100 text-yellow-800" :
                       "bg-gray-100 text-gray-700"}`}>
                     {m.status}
                   </span>
