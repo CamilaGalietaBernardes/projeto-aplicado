@@ -32,7 +32,7 @@ services:
     depends_on:
       db: 
         condition: service_healthy
-    command: ["/bin/sh", "-c", "./wait-for-db.sh && flask run --host=0.0.0.0 --reload"]
+    command: ["/bin/sh", "-c", "./wait-for-db.sh && flask run --host=0.0.0.0 --port=6000 --reload"]
     networks:
       - gestao_estoque_network
 
