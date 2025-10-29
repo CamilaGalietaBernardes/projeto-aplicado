@@ -18,6 +18,7 @@ def create_app() -> Flask:
     app.config["SQLALCHEMY_ECHO"] = bool(int(os.getenv("SQLALCHEMY_ECHO", "0")))
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+    # Configuração dinâmica das origens do CORS
     frontend_origins = os.getenv("FRONTEND_ORIGINS", "http://localhost:5173").split(",")
     frontend_origins = [o.strip() for o in frontend_origins if o.strip()]
 
@@ -26,8 +27,7 @@ def create_app() -> Flask:
         resources={r"/*": {"origins": frontend_origins}},
         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allow_headers=["Content-Type", "Authorization"],
-)
-
+    )
 
     db.init_app(app)
 
