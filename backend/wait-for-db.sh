@@ -1,23 +1,28 @@
 #!/bin/sh
 set -e
 
-HOST="${DB_HOST:-db}"
-PORT="${DB_PORT:-5432}"
+DB_HOST=$(echo "$DATABASE_URL" | sed -E 's|^.*@([^:/]+).*|\1|')
+[ -z "$DB_HOST" ] && DB_HOST="db"
 
-echo "Aguardando Postgres em $HOST:$PORT..."
+DB_PORT=5432
 
-python3 - <<'PYCODE'
-import os, socket, time, sys
-host = os.getenv("DB_HOST", "db")
-port = int(os.getenv("DB_PORT", "5432"))
+echo "Aguardando Postgres em $DB_HOST:$DB_PORT..."
+
+python3 - <<PYCODE
+import socket, time, sys
+
+host = "${DB_HOST}"
+port = ${DB_PORT}
 attempts = 120
-for i in range(attempts):
+
+for _ in range(attempts):
     try:
         with socket.create_connection((host, port), timeout=1):
             print("Postgres acessível. Seguindo...")
             sys.exit(0)
     except OSError:
         time.sleep(1)
+
 print("Falha ao conectar ao Postgres dentro do tempo limite.", file=sys.stderr)
 sys.exit(1)
 PYCODE
