@@ -10,7 +10,7 @@ const getProxyTarget = () => {
   return "http://localhost:6000"
 }
 
-const getProdApi = () => 'https://projeto-aplicado.onrender.com'
+const getProdApi = () => process.env.VITE_API_URL || "http://localhost:6000"
 
 export default defineConfig({
   plugins: [
