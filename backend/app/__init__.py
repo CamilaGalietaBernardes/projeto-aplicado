@@ -2,7 +2,6 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-
 from dotenv import load_dotenv
 
 mode = os.getenv("APP_MODE", "local")
@@ -18,16 +17,20 @@ def create_app() -> Flask:
     app.config["SQLALCHEMY_ECHO"] = bool(int(os.getenv("SQLALCHEMY_ECHO", "0")))
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    frontend_origins = os.getenv("FRONTEND_ORIGINS", "http://localhost:5173").split(",")
-    frontend_origins = [o.strip() for o in frontend_origins if o.strip()]
+    frontend_origins = os.getenv(
+        "FRONTEND_ORIGINS",
+        "http://localhost:5173,https://projeto-aplicado-front.onrender.com,https://projeto-aplicado-frontend.web.app"
+    ).split(",")
+
+    frontend_origins = [origin.strip() for origin in frontend_origins if origin.strip()]
 
     CORS(
         app,
         resources={r"/*": {"origins": frontend_origins}},
         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allow_headers=["Content-Type", "Authorization"],
-)
-
+        supports_credentials=True
+    )
 
     db.init_app(app)
 
