@@ -108,21 +108,47 @@ def atualizar_ordem(id, data):
             return f"Estoque da peça {peca_nome} não encontrado!", None
         if estoque.qtd < quantidade:
             return f"Estoque insuficiente para a peça {peca_nome}!", None
+    
         
-    ordem.equipamento_id = data.get(
-        "equipamento", {}).get("id", ordem.equipamento_id)
-    ordem.solicitante_id = data.get(
-        "solicitante", {}).get("id", ordem.solicitante_id)
-    ordem.tipo = data.get("tipo", ordem.tipo)
-    ordem.setor = data.get("setor", ordem.setor)
-    ordem.data = data.get("data", ordem.data)
-    ordem.recorrencia = data.get("recorrencia", ordem.recorrencia)
-    ordem.detalhes = data.get("detalhes", ordem.detalhes)
-    ordem.status = data.get("status", ordem.status)
-
     try:
+        # Atualiza os campos da ordem
+        ordem.equipamento_id = data.get("equipamento", {}).get("id", ordem.equipamento_id)
+        ordem.solicitante_id = data.get("solicitante", {}).get("id", ordem.solicitante_id)
+        ordem.tipo = data.get("tipo", ordem.tipo)
+        ordem.setor = data.get("setor", ordem.setor)
+        ordem.data = data.get("data", ordem.data)
+        ordem.recorrencia = data.get("recorrencia", ordem.recorrencia)
+        ordem.detalhes = data.get("detalhes", ordem.detalhes)
+        ordem.status = data.get("status", ordem.status)
+
+        pecas_atuais = Pecas_Ordem_Servico.query.filter_by(os_id=id).all()
+        for pu in pecas_atuais:
+            estoque_atual = Estoque.query.filter_by(peca_id=pu.peca_id).first()
+            if estoque_atual:
+                estoque_atual.qtd += pu.quantidade
+            db.session.delete(pu) 
+        
+        db.session.flush()
+
+        for p in pecas:
+            peca_id = p.get("peca_id")
+            quantidade = int(p.get("quantidade"))
+            estoque = Estoque.query.filter_by(peca_id=peca_id).first()
+            if estoque.qtd < quantidade:
+                db.session.rollback()
+                return f"Estoque insuficiente para a peça {estoque.peca.nome}", None
+            estoque.qtd -= quantidade
+
+            uso_os = Pecas_Ordem_Servico(
+                os_id = ordem.id,
+                peca_id = peca_id,
+                quantidade = quantidade
+            )
+            db.session.add(uso_os)
+
         db.session.commit()
         return None, ordem
+    
     except Exception as e:
         db.session.rollback()
         return str(e), None

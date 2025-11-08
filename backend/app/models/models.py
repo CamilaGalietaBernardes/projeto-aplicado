@@ -90,7 +90,14 @@ class OrdemServico(db.Model):
             "status": self.status,
             "equipamento": self.equipamento.to_dict() if self.equipamento else None,
             "solicitante": self.solicitante.to_dict() if self.solicitante else None,
-            "data": self.data.strftime("%Y-%m-%d") if self.data else None
+            "data": self.data.strftime("%Y-%m-%d") if self.data else None,
+            "pecas_utilizadas": [
+                {
+                    "peca_id": p.peca_id,
+                    "quantidade": p.quantidade
+                }
+                for p in self.pecas_os
+            ]
         }
 
 class Pecas_Ordem_Servico(db.Model):
