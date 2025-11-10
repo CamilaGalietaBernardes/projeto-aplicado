@@ -150,7 +150,11 @@ export default function Manutencao() {
               Descrição: <span className="font-medium">{ordem.detalhes || "-"}</span>
             </div>
             <div className="text-gray-600 text-sm">
-              Quantidade: <span className="font-medium">{ordem.quantidade}</span>
+                Quantidade: <span className="font-medium">
+                  {ordem.pecas_utilizadas && ordem.pecas_utilizadas.length > 0 
+                      ? ordem.pecas_utilizadas[0].quantidade 
+                      : "-"}
+                </span>
             </div>
             <div className="flex gap-2 mt-3">
               <button

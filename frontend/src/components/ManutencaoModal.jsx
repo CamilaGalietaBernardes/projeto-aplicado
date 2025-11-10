@@ -32,7 +32,7 @@ export default function ManutencaoModal({ open, onSalvar, onClose, ordemEdicao }
           data: ordemEdicao.data?.split("T")[0] || new Date().toISOString().split("T")[0],
           equipamento_id: ordemEdicao.equipamento?.id || "",
           solicitante_id: ordemEdicao.solicitante?.id || "",
-          quantidade: ordemEdicao.quantidade || ""
+          quantidade: ordemEdicao.pecas_utilizadas?.length > 0 ? String(ordemEdicao.pecas_utilizadas[0].quantidade) : ""
         });
       } else {
         setForm({
