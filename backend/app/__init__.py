@@ -10,7 +10,7 @@ load_dotenv(env_file, override=False)
 
 db = SQLAlchemy()
 
-def create_app() -> Flask:
+def create_app(config_name="default") -> Flask:
     app = Flask(__name__)
 
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
@@ -32,6 +32,9 @@ def create_app() -> Flask:
         supports_credentials=True
     )
 
+    from .config import TestingConfig
+    if config_name == "testing":
+        app.config.from_object(TestingConfig)
     db.init_app(app)
 
     from .routes import routes
